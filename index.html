@@ -502,9 +502,9 @@ const DEFS=`<defs>
 <g id="pfGL"><ellipse cx="0" cy="0" rx="10.5" ry="8.5" fill="#111"/><path d="M-5 -3.5 Q0 -6 5 -3.5" fill="none" stroke="#bbb" stroke-width="1.1"/><path d="M-5 1.5 Q0 -1 5 1.5" fill="none" stroke="#bbb" stroke-width="1.1"/></g>
 </defs>`;
 const f=n=>(+n).toFixed(1),UA=62;
-const IK=(S,W,fa)=>{const dx=W[0]-S[0],dy=W[1]-S[1],D=Math.min(Math.hypot(dx,dy),UA+fa-0.5);const a=Math.acos(Math.max(-1,Math.min(1,(UA*UA+D*D-fa*fa)/(2*UA*D))));const t=Math.atan2(dy,dx)+a;return [S[0]+UA*Math.cos(t),S[1]+UA*Math.sin(t)];};
+const IK=(S,W,fa,sd)=>{const dx=W[0]-S[0],dy=W[1]-S[1],D=Math.min(Math.hypot(dx,dy),UA+fa-0.5);const a=Math.acos(Math.max(-1,Math.min(1,(UA*UA+D*D-fa*fa)/(2*UA*D))));const t=Math.atan2(dy,dx)+(sd||1)*a;return [S[0]+UA*Math.cos(t),S[1]+UA*Math.sin(t)];};
 const quad=(P,Q,wp,wq)=>{const dx=Q[0]-P[0],dy=Q[1]-P[1],l=Math.hypot(dx,dy),nx=-dy/l,ny=dx/l;return `M${f(P[0]+nx*wp/2)} ${f(P[1]+ny*wp/2)} L${f(Q[0]+nx*wq/2)} ${f(Q[1]+ny*wq/2)} L${f(Q[0]-nx*wq/2)} ${f(Q[1]-ny*wq/2)} L${f(P[0]-nx*wp/2)} ${f(P[1]-ny*wp/2)} Z`;};
-const LIMB=(S,W,c,k,fa)=>{const E=IK(S,W,fa);const ws=24*k,we=20*k,ww=15*k;const d=quad(S,E,ws,we)+' '+quad(E,W,we,ww);const circ=`<circle cx="${f(E[0])}" cy="${f(E[1])}" r="${f(we/2)}"/><circle cx="${f(S[0])}" cy="${f(S[1])}" r="${f(ws/2)}"/>`;const fx=W[0]-E[0],fy=W[1]-E[1],fl=Math.hypot(fx,fy),ux=fx/fl,uy=fy/fl;const C0=[W[0]-ux*8*k,W[1]-uy*8*k],C1=[W[0]+ux,W[1]+uy];const ex=S[0]-E[0],ey=S[1]-E[1],el=Math.hypot(ex,ey);const cr=`M${f(E[0]+ex/el*7+ux*3)} ${f(E[1]+ey/el*7+uy*3)} Q${f(E[0]+(ex/el+ux)*2)} ${f(E[1]+(ey/el+uy)*2)} ${f(E[0]+ux*8+ex/el*2)} ${f(E[1]+uy*8+ey/el*2)}`;
+const LIMB=(S,W,c,k,fa,sd)=>{const E=IK(S,W,fa,sd);const ws=24*k,we=20*k,ww=15*k;const d=quad(S,E,ws,we)+' '+quad(E,W,we,ww);const circ=`<circle cx="${f(E[0])}" cy="${f(E[1])}" r="${f(we/2)}"/><circle cx="${f(S[0])}" cy="${f(S[1])}" r="${f(ws/2)}"/>`;const fx=W[0]-E[0],fy=W[1]-E[1],fl=Math.hypot(fx,fy),ux=fx/fl,uy=fy/fl;const C0=[W[0]-ux*8*k,W[1]-uy*8*k],C1=[W[0]+ux,W[1]+uy];const ex=S[0]-E[0],ey=S[1]-E[1],el=Math.hypot(ex,ey);const cr=`M${f(E[0]+ex/el*7+ux*3)} ${f(E[1]+ey/el*7+uy*3)} Q${f(E[0]+(ex/el+ux)*2)} ${f(E[1]+(ey/el+uy)*2)} ${f(E[0]+ux*8+ex/el*2)} ${f(E[1]+uy*8+ey/el*2)}`;
  return {svg:`<g fill="#111" stroke="#111" stroke-width="4.5" stroke-linejoin="round"><path d="${d}"/>${circ}</g><g fill="${c}"><path d="${d}"/>${circ}</g><path d="${cr}" fill="none" stroke="#111" stroke-width="1.2" opacity="0.7" stroke-linecap="round"/><path d="${quad(C0,C1,17.5*k,17.5*k)}" fill="#5a5a5a" stroke="#111" stroke-width="1.5" stroke-linejoin="round"/>`,u:[ux,uy]};};
 const FIST=(F,a,k)=>`<g transform="translate(${f(F[0])},${f(F[1])}) rotate(${f(a)}) scale(${k})"><rect x="-9" y="-8" width="18" height="16" rx="6" fill="#111"/><path d="M-3.5 1 L-3.5 6.5 M1 1 L1 7 M5 1 L5 6.5" stroke="#bbb" stroke-width="1" fill="none" stroke-linecap="round"/><ellipse cx="2.5" cy="-5.5" rx="6.5" ry="3.1" fill="#111" stroke="#bbb" stroke-width="0.9"/></g>`;
 const GLASS=(F,C,r,k)=>{const dx=C[0]-F[0],dy=C[1]-F[1],l=Math.hypot(dx,dy),ux=dx/l,uy=dy/l;const rim=[C[0]-ux*r,C[1]-uy*r],end=[F[0]-ux*10,F[1]-uy*10],col=[rim[0]-ux*6,rim[1]-uy*6];const a=Math.atan2(uy,ux)*180/Math.PI;
@@ -522,13 +522,14 @@ const STAMPX=(cx,cy,w,txt,col,fs)=>`<g transform="rotate(-9 ${cx} ${cy})"><rect 
 const LENS=(id,cx,cy,r,inner)=>`<g clip-path="url(#${id})"><circle cx="${cx}" cy="${cy}" r="${r}" fill="#fbf8f0"/><g transform="translate(${cx} ${cy}) scale(1.75) translate(${-cx} ${-cy})">${inner}</g></g>`;
 
 const PRINT='<g fill="none" stroke="#111" stroke-width="1.3" stroke-linecap="round" opacity="0.85"><path d="M-14 6 Q-16 -14 0 -16 Q16 -16 15 2 Q14 14 2 16"/><path d="M-9 8 Q-11 -9 0 -10 Q10 -10 10 2 Q9 9 1 11"/><path d="M-4 9 Q-6 -4 0 -5 Q5 -5 5 2 Q5 5 0 6"/><path d="M-18 12 Q-22 -18 0 -21 Q21 -21 20 4"/><path d="M-12 18 Q-2 22 10 19"/><path d="M-22 4 Q-24 -24 1 -26"/></g>';
-const HERO=(o)=>{o=Object.assign({R:-10,P:[148,164],r:30,C:[244,74],F:[220,112],W:[215,120],k:1,inner:'print',near:true,glint:true},o||{});
+const HERO=(o)=>{o=Object.assign({R:-10,P:[148,164],r:30,C:[244,74],F:[220,112],W:[215,120],k:1,inner:'print',near:true,glint:true,hip:[109,300],hsd:1,hga:null,hs:[141,231]},o||{});
  const hg=`<g transform="rotate(${o.R} ${o.P[0]} ${o.P[1]})">`,head=hg+'<use href="#pfHBK"/></g><use href="#pfBD"/>'+hg+'<use href="#pfFC"/></g>'+hg+'<use href="#pfTP"/></g>';
  const C=o.C,g=GLASS(o.F,C,o.r,o.k),cut=g.indexOf('<circle cx="'+C[0]+'"');
  const lens=`<clipPath id="pfLensH"><circle cx="${C[0]}" cy="${C[1]}" r="${o.r}"/></clipPath><g clip-path="url(#pfLensH)"><circle cx="${C[0]}" cy="${C[1]}" r="${o.r}" fill="#fbf8f0"/><g transform="translate(${C[0]} ${C[1]}) scale(${o.r/24})">${o.inner==='print'?PRINT:''}</g></g>`;
  const gl=o.glint?`<path d="M${C[0]+o.r*0.55} ${C[1]-o.r*1.05} l2.2 6.3 6.3 2.2 -6.3 2.2 -2.2 6.3 -2.2 -6.3 -6.3 -2.2 6.3 -2.2Z" class="pf-glint" fill="#fff" stroke="#111" stroke-width="1"/>`:'';
  const arm=o.near?LIMB(SN,o.W,'#8f8f8f',1,60).svg:LIMB(SF,o.W,'#777',0.9,54).svg;
- return (o.bl===false?'':BL)+(o.near?head+arm:arm+head+HIP)+g.slice(0,cut)+lens+g.slice(cut)+gl};
+ let back='',hand='';if(o.near&&o.hip){const l=LIMB(o.hs,o.hip,'#777',0.9,54,o.hsd),h=[o.hip[0]+l.u[0]*7,o.hip[1]+l.u[1]*7],a=o.hga===null?Math.atan2(l.u[1],l.u[0])*180/Math.PI:o.hga;back=l.svg;hand=`<use href="#pfGL" transform="translate(${f(h[0])},${f(h[1])}) rotate(${f(a)}) scale(0.95)"/>`}
+ return (o.bl===false?'':BL)+(o.near?back+head+hand+arm:arm+head+HIP)+g.slice(0,cut)+lens+g.slice(cut)+gl};
 const GR='#2c7a3a';
 const CA=L(208,72,[70,46])+STAMPX(244,104,80,'CASE CRACKED',GR,13);
 const CB=L(208,108,[70,46])+STAMPX(242,134,70,'VERIFIED',GR,15);
