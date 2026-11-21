@@ -206,16 +206,71 @@ button{font:inherit;color:inherit;cursor:pointer}
 .interro blockquote{font-family:Georgia,serif;font-style:italic;margin:4px 0 8px;padding-left:12px;border-left:4px solid var(--red)}
 textarea.reflect{width:100%;min-height:140px;font:inherit;font-family:var(--type);padding:12px;border:2px solid #000;background:#fffdf7;line-height:1.6}
 /* handbook */
-.flips{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin-top:12px}
-.flip{display:block;width:100%;perspective:900px;-webkit-perspective:900px;margin:0;padding:0;border:0;background:none;height:150px;text-align:left;cursor:pointer;font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
-.flip .in{display:block;position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d;-webkit-transform-style:preserve-3d}
-.flip[aria-pressed="true"] .in{transform:rotateY(180deg)}
-.flip:focus-visible .f,.flip:focus-visible .b{outline:3px solid var(--red);outline-offset:2px}
-@media (prefers-reduced-motion:reduce){.flip .in{transition:none}}
-.flip .f,.flip .b{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:2px solid #000;box-shadow:3px 3px 0 #000;padding:12px;display:flex;flex-direction:column;justify-content:center;color:#111}
-.flip .f{background:var(--manila);font-family:var(--head);font-size:1.25rem;letter-spacing:.03em;align-items:center;text-align:center}
-.flip .f small{display:block;font-family:var(--type);font-size:.68rem;letter-spacing:.12em;margin-top:6px}
-.flip .b{background:#fffdf7;transform:rotateY(180deg);-webkit-transform:rotateY(180deg);font-size:.86rem;line-height:1.38;overflow:auto}
+/* handbook flipbook */
+.fb{max-width:660px;margin:6px auto 0}
+.fb-pad{position:relative;height:360px;margin:26px 10px 20px 4px;perspective:1800px;-webkit-perspective:1800px}
+.fb-pad::before,.fb-pad::after{content:"";position:absolute;inset:0;background:#f6f0de;border:2px solid #111;z-index:-1}
+.fb-pad::before{transform:translate(4px,4px)}
+.fb-pad::after{transform:translate(8px,8px);box-shadow:4px 4px 0 #000}
+.fb-rings{position:absolute;z-index:5;top:-15px;left:18px;right:18px;height:30px;pointer-events:none;background:radial-gradient(circle at 13px 15px,transparent 0 4.6px,#1d1d1d 5px 8.6px,transparent 9px) repeat-x;background-size:27px 30px}
+.fb-stack{position:absolute;inset:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.fb-page{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;padding:26px 22px 12px 64px;color:#151515;border:2px solid #111;background-color:#fffdf3;background-image:linear-gradient(90deg,transparent 46px,rgba(192,32,43,.5) 46px 48px,transparent 48px),repeating-linear-gradient(transparent 0 27px,rgba(80,120,170,.24) 27px 28px);background-position:0 0,0 22px;transform-origin:50% 0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.fb-page::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.28),transparent 60%);opacity:0}
+.fb-page.fb-down{animation:fbdown .6s cubic-bezier(.25,.6,.3,1) both}
+.fb-page.fb-down::after{animation:fbshade .6s reverse both}
+.fb-page.fb-up{animation:fbup .6s cubic-bezier(.5,.1,.75,.55) both}
+.fb-page.fb-up::after{animation:fbshade .62s both}
+@keyframes fbup{0%{transform:rotateX(0)}82%{opacity:1}100%{transform:rotateX(98deg);opacity:0}}
+@keyframes fbdown{0%{transform:rotateX(98deg);opacity:0}18%{opacity:1}100%{transform:rotateX(0);opacity:1}}
+@keyframes fbshade{0%{opacity:0}100%{opacity:1}}
+.fb-hdr{display:flex;justify-content:space-between;align-items:flex-end;height:28px;padding-bottom:4px;font-family:var(--type);font-weight:700;font-size:.68rem;letter-spacing:.16em;color:#6a6253}
+.fb-body{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 188px;gap:18px;align-items:start;min-height:0}
+.fb-txt{grid-column:1;grid-row:1;min-width:0}
+.fb-sketch{grid-column:2;grid-row:1}
+.sheet .fb-term{position:relative;margin:0;padding:0 0 28px;font-family:var(--head);font-weight:700;font-size:1.85rem;line-height:28px;letter-spacing:.02em;text-transform:uppercase;color:#111}
+.fb-term::after{content:"";position:absolute;left:0;bottom:13px;width:64px;height:4px;background:var(--red)}
+.fb-def{margin:0;padding:0;font-family:var(--type);font-size:1.04rem;font-weight:700;line-height:28px;color:#1a1a1a}
+.fb-sketch{position:relative;margin:30px 0 0;padding:7px 7px 4px;background:#fff;border:1.5px solid #111;box-shadow:3px 3px 0 rgba(0,0,0,.3);transform:rotate(2.6deg)}
+.fb-sketch svg{display:block;width:100%;height:auto}
+.fb-tape{position:absolute;top:-11px;left:50%;width:74px;height:22px;margin-left:-37px;background:rgba(227,201,143,.78);border-left:2px dotted rgba(0,0,0,.12);border-right:2px dotted rgba(0,0,0,.12);transform:rotate(-5deg)}
+.fb-foot{position:absolute;right:16px;bottom:6px;font-family:var(--hand);font-size:.9rem;color:#6a6253}
+.fb-cover{padding:34px 26px 18px;align-items:center;justify-content:center;text-align:center;gap:6px;background-color:var(--manila);background-image:repeating-linear-gradient(115deg,rgba(0,0,0,.025) 0 2px,transparent 2px 7px)}
+.fb-cv-top{white-space:nowrap;font-family:var(--type);font-weight:700;font-size:.72rem;letter-spacing:.22em;background:#111;color:var(--blond);padding:4px 10px}
+.fb-cv-title{font-family:var(--head);font-weight:700;font-size:2.5rem;line-height:1.02;letter-spacing:.04em;color:#111;margin-top:8px}
+.fb-cv-sub{font-family:var(--type);font-weight:700;font-size:.86rem;color:#3c362b}
+.fb-cv-lens svg{width:86px;height:86px;margin:4px 0 2px}
+.fb-cv-prop{font-family:var(--type);font-size:.76rem;letter-spacing:.16em;border-top:2px solid #111;border-bottom:2px solid #111;padding:4px 12px}
+.fb-cv-prop b{color:var(--red)}
+.fb-cv-stamp{position:absolute;right:26px;top:58px;transform:rotate(-13deg);border:3px double var(--red);color:var(--red);font-family:var(--head);font-weight:700;font-size:1.05rem;letter-spacing:.16em;padding:2px 10px;opacity:.88;background:rgba(255,253,243,.35)}
+.fb-cv-hint{position:absolute;bottom:12px;left:0;right:0;font-family:var(--type);font-weight:700;font-size:.66rem;letter-spacing:.18em;color:#5a5345}
+.fb-back .btn{margin-top:6px}
+.fb-nav{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.fb-nav .btn:disabled{opacity:.35;box-shadow:none;cursor:default}
+.fb-count{font-family:var(--type);font-weight:700;font-size:.78rem;letter-spacing:.14em;text-align:center}
+.fb-index{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:16px;padding-top:12px;border-top:2px dashed #b9ad94}
+.fb-index-lab{font-family:var(--type);font-weight:700;font-size:.68rem;letter-spacing:.18em;background:#111;color:var(--blond);padding:3px 8px;margin-right:4px}
+.fb-tab{margin:0;font-family:var(--type);font-weight:700;font-size:.72rem;padding:4px 9px;border:1.5px solid #111;border-radius:7px 7px 0 0;background:var(--manila);color:#111;cursor:pointer}
+.fb-tab:hover{background:#efd9a6}
+.fb-tab.on{background:var(--red);color:#fff}
+.fb-print{display:none}
+@media (max-width:620px){
+ .fb-pad{height:470px;margin:24px 8px 18px 2px}
+ .fb-page:not(.fb-cover){padding:24px 14px 10px 50px;background-image:linear-gradient(90deg,transparent 36px,rgba(192,32,43,.5) 36px 38px,transparent 38px),repeating-linear-gradient(transparent 0 27px,rgba(80,120,170,.24) 27px 28px);background-position:0 0,0 20px}
+ .fb-hdr{font-size:.6rem;letter-spacing:.12em}
+ .fb-body{display:block}
+ .fb-sketch{box-sizing:border-box;width:150px;height:104px;margin:0 2px 8px auto;padding:5px 5px 3px}
+ .fb-tape{width:52px;margin-left:-26px;height:16px;top:-8px}
+ .sheet .fb-term{font-size:1.5rem}
+ .fb-def{font-size:.98rem}
+ .fb-cover{padding:30px 16px 18px}
+ .fb-cv-top{font-size:.6rem;letter-spacing:.14em}
+ .fb-cv-title{font-size:2.05rem}
+ .fb-cv-sub{font-size:.8rem}
+ .fb-cv-stamp{right:10px;top:16px;font-size:.82rem}
+ .fb-rings{left:10px;right:10px}
+}
+@media (prefers-reduced-motion:reduce){.fb-page.fb-up,.fb-page.fb-down{animation:none}}
+@media print{.fb{display:none}.fb-print{display:block}.fb-print dt{font-weight:800;margin-top:8px}.fb-print dd{margin:2px 0 0 0}}
 .steps{counter-reset:s;list-style:none;padding:0;display:grid;gap:8px}
 .steps li{counter-increment:s;display:flex;gap:10px;align-items:baseline;border-bottom:1.5px dashed #b9ad94;padding-bottom:7px}
 .steps li::before{content:counter(s);font-family:var(--head);font-size:1.3rem;color:var(--red);min-width:1.2em}
@@ -478,6 +533,7 @@ const sfx={on:LS.get('md2_sound',false),ctx:null,n:0,
  stamp(){if(!this.on)return;this.noise(.22,1.2,160,.8);setTimeout(()=>this.noise(.05,.5,900,1),30)},
  shutter(){if(!this.on)return;this.noise(.02,.9,3200,1.5);setTimeout(()=>this.noise(.05,.6,1400,1.2),45);setTimeout(()=>this.noise(.35,.25,5200,.6),70)},
  fx(k){if(!this.on)return;if(k==='projector'){this.noise(.03,.8,900,1.5);setTimeout(()=>this.noise(.04,.7,600,1.5),140)}else if(k==='halftone'){[0,260,520].forEach(t=>setTimeout(()=>this.noise(.09,.9,120,.8),t))}else if(k==='scan'){for(let i=0;i<16;i++)setTimeout(()=>this.noise(.012,.25,2600+Math.random()*900,3),i*120)}else if(k==='polaroid'){this.noise(.45,.35,700,.5)}},
+ page(){if(!this.on)return;this.noise(.16,.4,2600,.5);setTimeout(()=>this.noise(.1,.3,900,.7),80)},
  ding(){if(!this.on)return;const c=this.ac();if(!c)return;const o=c.createOscillator(),g=c.createGain();o.frequency.value=1760;g.gain.setValueAtTime(.18,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.6);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+.6)}
 };
 function setSound(on){sfx.on=on;LS.set('md2_sound',on);const b=$('#soundBtn');b.textContent='Sound: '+(on?'on':'off');b.setAttribute('aria-pressed',on?'true':'false');if(on){const c=sfx.ac();if(c&&c.resume)c.resume();sfx.ding()}}
@@ -747,13 +803,46 @@ function videos(d){view.innerHTML=bar(d,null)+`<article class="sheet"><div class
  R.querySelectorAll('video').forEach(v=>v.addEventListener('error',()=>{if(v.nextElementSibling&&v.nextElementSibling.classList.contains('vl-missing'))return;const m=document.createElement('p');m.className='vl-missing';m.innerHTML='<strong>This video file could not be loaded.</strong> The videos only play from the full lesson package: the <em>videos</em> folder must sit next to index.html. If you are viewing a single preview file, upload or open the complete package instead.';v.insertAdjacentElement('afterend',m)}))}
 
 /* ---------- handbook + locker ---------- */
-function handbook(){view.innerHTML=`<article class="sheet"><div class="kicker">THE DETECTIVE'S HANDBOOK</div><h2>Know your terms</h2><p class="muted" style="margin-top:0">Tap a card to flip it.</p><div class="flips">${D.glossary.map(([a,b],i)=>`<button class="flip" aria-pressed="false" data-flip="${i}"><span class="in"><span class="f">${esc(a)}<small>TAP TO FLIP</small></span><span class="b">${esc(b)}</span></span></button>`).join('')}</div></article>
+const HB_ART={'Misinformation':'comment','Disinformation':'newspaper','Propaganda':'megaphone','Pseudoscience':'sparkle','Science denial':'brain','Cherry-picking':'cherries','Anecdote':'stars','Correlation ≠ causation':'chart','Hazard vs. risk':'petri','Appeal to nature':'mushroom','Conflict of interest':'money','Scientific consensus':'book','False balance':'scale','SIFT':'dossier'};
+const HB_LENS='<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="50" cy="50" r="33" fill="#fffdf3" stroke="#111" stroke-width="7"/><text x="50" y="64" text-anchor="middle" font-family="Courier New,monospace" font-weight="700" font-size="40" fill="#c0202b">?</text><path d="M34 33q9-10 22-10" stroke="#9a9a9a" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M74 74L105 105" stroke="#111" stroke-width="13" stroke-linecap="round"/><path d="M76 76L103 103" stroke="#c0202b" stroke-width="5" stroke-linecap="round"/></svg>';
+let hbPage=0,hbEndSaid=false;
+function hbPageHTML(p){const G=D.glossary,n=G.length;
+ if(p===0)return `<div class="fb-page fb-cover" data-p="0"><div class="fb-cv-top">CASE FILE · FIELD REFERENCE</div><div class="fb-cv-title">THE DETECTIVE'S<br>HANDBOOK</div><div class="fb-cv-sub">${n} terms every investigator needs</div><div class="fb-cv-lens">${HB_LENS}</div><div class="fb-cv-prop">PROPERTY OF <b>PROF HONEY</b></div><span class="fb-cv-stamp">CONFIDENTIAL</span><div class="fb-cv-hint">TAP TO OPEN ▸</div></div>`;
+ if(p>n)return `<div class="fb-page fb-cover fb-back" data-p="${p}"><div class="fb-cv-top">END OF HANDBOOK</div><div class="fb-cv-title">CASE<br>CLOSED</div><div class="fb-cv-sub">You've read every entry. Now put it to work.</div><div class="fb-cv-lens">${HB_LENS}</div><button class="btn red" data-hbgo="board">Open the case board →</button><span class="fb-cv-stamp">FILED</span><div class="fb-cv-hint">◂ BACK TO REVIEW ANY ENTRY</div></div>`;
+ const [t,d]=G[p-1],art=HB_ART[t]||'dossier';
+ return `<div class="fb-page" data-p="${p}"><div class="fb-hdr"><span>ENTRY ${String(p).padStart(2,'0')} / ${n}</span><span>FIELD HANDBOOK</span></div><div class="fb-body"><figure class="fb-sketch" aria-hidden="true"><i class="fb-tape"></i><svg viewBox="0 0 240 170">${ART[art]||''}</svg></figure><div class="fb-txt"><h3 class="fb-term">${esc(t)}</h3><p class="fb-def" aria-hidden="true" data-def="${esc(d)}">${esc(d)}</p><span class="sr">${esc(d)}</span></div></div><div class="fb-foot">p.${p}</div></div>`}
+function hbSync(){const n=D.glossary.length,c=$('#fbCount');if(!c)return;
+ c.textContent=hbPage===0?'COVER':hbPage>n?'BACK COVER':'ENTRY '+hbPage+' OF '+n;
+ $('#fbPrev').disabled=hbPage===0;$('#fbNext').disabled=hbPage>n;$('#fbNext').textContent=hbPage===0?'Open →':'Next →';
+ $$('.fb-tab').forEach(b=>{const on=+b.dataset.hbp===hbPage;b.classList.toggle('on',on);b.setAttribute('aria-current',on?'page':'false')})}
+function hbFlip(to){const st=$('#fbStack');if(!st)return;const n=D.glossary.length;to=Math.max(0,Math.min(n+1,to));
+ const cur=st.querySelector('.fb-page:not(.leaving)');if(cur&&to===hbPage)return;const dir=to>hbPage?1:-1;hbPage=to;skipping=false;const my=++tok;
+ const tmp=document.createElement('div');tmp.innerHTML=hbPageHTML(to);const nw=tmp.firstElementChild;
+ if(!cur||reduce){st.innerHTML='';st.appendChild(nw)}
+ else if(dir>0){st.insertBefore(nw,cur);cur.classList.add('leaving','fb-up');setTimeout(()=>cur.remove(),650)}
+ else{st.appendChild(nw);nw.classList.add('fb-down');cur.classList.add('leaving');setTimeout(()=>{cur.remove();nw.classList.remove('fb-down')},650)}
+ if(cur)sfx.page();hbSync();
+ const def=$('.fb-def',nw);if(def&&!reduce){const full=def.dataset.def;def.textContent='';setTimeout(()=>{if(my===tok)type(def,full,12,my)},cur?(dir>0?260:420):150)}
+ const b=$('[data-hbgo]',nw);if(b)b.onclick=e=>{e.stopPropagation();go(b.dataset.hbgo)};
+ if(to>n&&!hbEndSaid){hbEndSaid=true;Prof.say("That's the whole book. Now go crack some cases.",'thinking',false,'swap')}}
+function handbook(){const G=D.glossary;if(hbPage>G.length+1)hbPage=0;
+ view.innerHTML=`<article class="sheet hb"><div class="kicker">THE DETECTIVE'S HANDBOOK</div><h2>Know your terms</h2><p class="muted" style="margin-top:0">Flip through Prof Honey's notebook. Tap the page, swipe, or use the arrow keys.</p>
+ <div class="fb"><div class="fb-pad" role="region" aria-label="Detective's handbook, flip notebook"><span class="fb-rings" aria-hidden="true"></span><div class="fb-stack" id="fbStack"></div></div>
+ <div class="fb-nav"><button class="btn" id="fbPrev">← Back</button><span class="fb-count" id="fbCount" aria-live="polite"></span><button class="btn red" id="fbNext">Next →</button></div>
+ <div class="fb-index" role="group" aria-label="Jump to a term"><span class="fb-index-lab">INDEX</span>${G.map(([a],i)=>`<button class="fb-tab" data-hbp="${i+1}">${esc(a)}</button>`).join('')}</div></div>
+ <dl class="fb-print">${G.map(([a,b])=>`<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join('')}</dl></article>
  <article class="sheet"><div class="kicker">FIELD GUIDE</div><h2>Ask five questions</h2><ol class="steps"><li><span>Who is making the claim?</span></li><li><span>What exactly is claimed?</span></li><li><span>What original evidence supports it?</span></li><li><span>What do independent sources find?</span></li><li><span>What are the consequences of acting on it?</span></li></ol>
  <p style="border:2px solid #000;background:#fff9ea;padding:10px 12px"><strong>Important:</strong> “I don’t know yet” is often the most scientifically responsible answer. Real uncertainty is not the same as proof of danger, and scientific consensus is not the same as infallibility.</p>
  <h3>Anthropology connections</h3><p><strong>Mary Douglas:</strong> Purity and pollution categories can shape food fears. <strong>Explanatory models:</strong> Existing beliefs influence what counts as a convincing account of illness. <strong>Political economy:</strong> Ask who gains financially or politically. <strong>Trust:</strong> Critique institutional failures without abandoning standards of evidence.</p>
  <button class="btn" onclick="window.print()">Print / save handbook as PDF</button></article>`;
- $$('[data-flip]',view).forEach(b=>b.onclick=()=>b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')==='true'?'false':'true'));
- Prof.say("My handbook. Flip a card whenever you need a definition.",'inspecting')}
+ const st=$('#fbStack');let sx=null,sy=null,swiped=false;
+ st.addEventListener('touchstart',e=>{const t=e.changedTouches[0];sx=t.clientX;sy=t.clientY;swiped=false},{passive:true});
+ st.addEventListener('touchend',e=>{if(sx===null)return;const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;sx=null;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.3){swiped=true;hbFlip(hbPage+(dx<0?1:-1))}},{passive:true});
+ st.onclick=()=>{if(swiped){swiped=false;return}if($('.fb-def.typing',st)){skipping=true;return}if(hbPage<=G.length)hbFlip(hbPage+1)};
+ $('#fbPrev').onclick=()=>hbFlip(hbPage-1);$('#fbNext').onclick=()=>hbFlip(hbPage+1);
+ $$('.fb-tab').forEach(b=>b.onclick=()=>hbFlip(+b.dataset.hbp));
+ const keep=hbPage;hbPage=-1;hbFlip(keep);
+ Prof.say("My handbook. Flip through it whenever you need a definition.",'inspecting')}
 function locker(){view.innerHTML=`<article class="sheet"><div class="kicker">EVIDENCE LOCKER</div><h2>Original sources</h2><p>These are original public-health, regulatory, research-methods, and historical sources, linked so you can investigate directly. Live dashboards may change over time.</p>
  <div class="bags" style="margin-top:20px">${D.cases.map(c=>`<div class="bag"><h3>${esc(c.title)}</h3>${c.links.map(l=>`<a href="${esc(l[1])}" target="_blank" rel="noopener noreferrer">${esc(l[0])} ↗</a>`).join('')}</div>`).join('')}<div class="bag"><h3>More tools for checking claims</h3>${D.moreTools.map(l=>`<a href="${esc(l[1])}" target="_blank" rel="noopener noreferrer">${esc(l[0])} ↗</a>`).join('')}</div></div>
  <p class="muted" style="margin-top:20px">The original examples and links provide context, not endorsements of any fictional advertisement. Check live source pages before class, especially changing outbreak statistics and regulations.</p></article>`;
@@ -767,6 +856,7 @@ $('#soundBtn').onclick=()=>setSound(!sfx.on);(()=>{const sb=$('#soundBtn');sb.te
 document.addEventListener('keydown',e=>{if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
  const typingNow=!!$('.typing',view);
  if(typingNow&&(e.key==='Enter'||e.key===' ')&&!(e.target&&e.target.tagName==='BUTTON')){skipping=true;e.preventDefault();return}
+ if(route.v==='handbook'&&(e.key==='ArrowRight'||e.key==='ArrowLeft')&&$('#fbStack')){e.preventDefault();hbFlip(hbPage+(e.key==='ArrowRight'?1:-1));return}
  if(route.v==='deck'&&typeof route.i==='number'){const cards=$('#cards');if(cards&&cards.style.visibility!=='hidden'&&!cards.classList.contains('done')){const k=e.key.toLowerCase();let idx='abcd'.indexOf(k);if(idx<0)idx='1234'.indexOf(k);if(idx>-1&&idx<$$('.icard',cards).length){e.preventDefault();choose(deckById(route.deck),route.i,idx);return}}
   if(e.key==='ArrowRight'){const n=$('#next');if(n&&!n.disabled)n.click()}}});
 updatePts();
