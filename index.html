@@ -325,6 +325,18 @@ textarea.reflect{width:100%;min-height:140px;font:inherit;font-family:var(--type
  #stage.home{padding-bottom:40px}
 }
 
+@media (min-width:901px){.sheet.inv .cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:901px) and (max-height:860px){
+ .sheet.inv{padding:16px 20px 18px}
+ .sheet.inv .exrow{grid-template-columns:minmax(180px,232px) minmax(0,1fr);gap:18px}
+ .sheet.inv .photo{padding:6px 6px 22px;margin-top:2px}
+ .sheet.inv .photo:has(.poster){zoom:.68;justify-self:center}
+ .sheet.inv .qbox{margin:12px 0 4px}
+ .sheet.inv .cards{gap:9px;margin-top:8px}
+ .sheet.inv .icard{padding:9px 12px 9px 10px}
+ .sheet.inv .notes{margin-top:12px;padding:9px 14px 10px 42px}
+ .sheet.inv .navrow{margin-top:12px}
+}
 /* laptop-height fitting (desktop layout) */
 @media (min-width:901px){
  .pf-figbtn{width:clamp(140px,calc((100vh - 440px) * .83),230px)}
@@ -766,7 +778,7 @@ function home(){const my=tok;const all=decks.filter(d=>d.items),ex=all.reduce((a
  const first=!LS.get('md2_home',false);LS.set('md2_home',true);const line=first?HOME_LINES[0]:pick(HOME_LINES);
  view.innerHTML=`<section class="hm"><div class="hm-hero">
   <figure class="hm-panel" aria-hidden="true"><svg id="hmStage" viewBox="38 14 254 346" focusable="false"><defs><mask id="hmMask" maskUnits="userSpaceOnUse" x="0" y="0" width="300" height="360"><rect x="0" y="0" width="300" height="360" fill="#000"/><path id="hmScrib" d="${scribble(300,360,12)}" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/></mask></defs><rect x="0" y="0" width="300" height="360" fill="#f1ebdd"/><g mask="url(#hmMask)">${PROF.POSE.hero}</g><g id="hmPencil" opacity="0">${$('#pfPencil').innerHTML}</g></svg><span class="hm-cap">MEANWHILE, AT THE LAB…</span></figure>
-  <div class="hm-title"><div class="kicker" style="background:var(--red)">MEDICAL ANTHROPOLOGY · INTERACTIVE LAB</div><h1>THE MISINFORMATION <span>DETECTIVE</span></h1><p class="sub">Bad Science, Big Profits &amp; the Business of Fear</p><p class="hm-credit">STARRING <b>PROF HONEY</b></p>
+  <div class="hm-title"><div class="kicker" style="background:var(--red)">MEDICAL ANTHROPOLOGY · INTERACTIVE LAB</div><h1>THE MISINFORMATION <span>DETECTIVE</span></h1><p class="sub">Bad Science, Big Profits &amp; the Business of Fear</p><p class="hm-credit">STARRING <b>PROFESSOR HONEY</b></p>
    <div class="hm-balloon"><span class="pf-name" aria-hidden="true">PROF HONEY</span><p id="hmSay" aria-hidden="true"></p><span class="sr">Prof Honey says: ${esc(line)}</span></div>
    <div class="row"><button class="btn red hm-go" data-hact="board">${ex?'Continue investigating →':'Start investigating →'}</button><button class="btn" data-hact="handbook">Detective's handbook</button></div>
    <p class="hm-stat">${ex?`${ex} exhibits examined · score ${total()} / ${maxTotal()}`:`${decks.length} files · ${maxTotal()} questions · 1 point each`}</p></div></div>
@@ -833,6 +845,7 @@ function item(d,i){const my=tok,it=d.items[i];if(!it)return go('deck',{deck:d.id
  const cards=$('#cards');
  $$('.icard',cards).forEach(b=>b.onclick=()=>choose(d,i,Number(b.dataset.c)));
  if(done){$('#twE').textContent=it.evidence;$('#twQ').textContent=it.question;cards.classList.add('instant');applyVerdict(d,i,prev,false);skipBtn.remove();const okR=prev===it.correct;Prof.say(okR?'You cracked this one already. Review my notes anytime.':'You missed this one. My notes show the stronger answer.',okR?(it.win==='debunk'?'cracked':'checked'):'falselead',false,'swap');return}
+ fitInv();
  cards.style.visibility='hidden';
  Prof.say(i===0?d.prof:pick(THINK),i===0?'inspecting':'thinking',false,'swap');
  (async()=>{reveal(fxFor(d),$('.photo',view),'EXHIBIT '+(i+1),my);
@@ -849,8 +862,15 @@ function applyVerdict(d,i,c,anim,first){const it=d.items[i],ok=c===it.correct;
  const st=$('#vstamp');st.textContent=ok?(it.win==='debunk'?'CASE CRACKED':'VERIFIED'):'FALSE LEAD';st.classList.toggle('ink',!ok);st.classList.toggle('good',ok);const phs=$('.photo',view);if(phs){phs.classList.add('stamped');st.style.fontSize='';const pw=phs.clientWidth*0.86;let fs=parseFloat(getComputedStyle(st).fontSize);while(st.offsetWidth>pw&&fs>11){fs-=1;st.style.fontSize=fs+'px'}}
  if(anim){st.classList.add('on');sfx.stamp();Prof.react(ok,it.win);if(ok&&first&&lastGain>0){const ph=$('.photo',view);const s=document.createElement('span');s.className='plus';s.textContent='+'+lastGain+(lastGain===1?' pt':' pts');s.style.right='10px';s.style.top='6px';ph.appendChild(s)}}
  else{st.classList.add('on');st.style.animation='none'}
- $('#notesWrap').innerHTML=notesHTML(it,ok);
+ $('#notesWrap').innerHTML=notesHTML(it,ok);fitInv();
  const n=$('#next');n.disabled=false;if(anim)setTimeout(()=>{const nw=$('.notes',view);if(nw&&nw.getBoundingClientRect().top>window.innerHeight-120)nw.scrollIntoView({behavior:reduce?'auto':'smooth',block:'nearest'})},350)}
+
+/* desktop: shrink an exhibit page just enough that its Next button stays on screen */
+function fitInv(){const a=$('.sheet.inv',view);if(!a)return;a.style.zoom='';const nav=$('.navrow',a);if(innerWidth<=900||!nav)return;
+ const top=a.getBoundingClientRect().top+scrollY,avail=innerHeight-top-16,fits=z=>{a.style.zoom=z;return nav.getBoundingClientRect().bottom+scrollY-top+16<=avail};
+ if(fits(1))return;let lo=.6,hi=1;if(!fits(lo)){a.style.zoom=lo;return}
+ for(let k=0;k<7;k++){const mid=(lo+hi)/2;if(fits(mid))lo=mid;else hi=mid}a.style.zoom=lo.toFixed(3)}
+addEventListener('resize',()=>{if(route.v==='deck'&&typeof route.i==='number')fitInv()});
 function closing(d){const n=d.items.length,ok=d.items.filter(it=>marks[it.key]===true).length;const idx=decks.indexOf(d);const nxt=decks.slice(idx+1).find(x=>x.group!=='final')||deckById('final');
  view.innerHTML=bar(d,null)+`<article class="sheet closed"><div class="kicker">${esc(d.tab)}</div><h2>${esc(d.title)}</h2><div class="bigstamp">CASE CLOSED</div>
  <p style="font-family:var(--type);font-weight:700;font-size:1.1rem">Correct first answers: ${ok} of ${n} · ${score(d.prefix)} of ${maxOf(d.prefix)} points</p>
