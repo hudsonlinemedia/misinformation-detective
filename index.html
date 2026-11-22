@@ -377,6 +377,33 @@ textarea.reflect{width:100%;min-height:140px;font:inherit;font-family:var(--type
  .fx-card{left:0;width:124px;bottom:-6px}
  .fx-wire{left:0;right:auto;width:250px;bottom:0}
 }
+
+/* brooklyn bridge gag */
+.bg-ov{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(8,7,6,.62);animation:bgfade .25s ease}
+.bg-ov.out{opacity:0;transition:opacity .25s}
+@keyframes bgfade{from{opacity:0}to{opacity:1}}
+.bg-card{position:relative;width:min(430px,100%);max-height:calc(100vh - 32px);overflow:auto;background:#f5ecd6;color:#111;border:3px solid #111;outline:2px solid #111;outline-offset:-9px;box-shadow:10px 12px 0 #000;padding:20px 22px 16px;text-align:center;transform:rotate(-1.5deg);animation:bgpop .55s cubic-bezier(.2,1.5,.4,1)}
+@keyframes bgpop{0%{transform:rotate(-12deg) scale(.3);opacity:0}60%{transform:rotate(1deg) scale(1.04);opacity:1}100%{transform:rotate(-1.5deg) scale(1)}}
+.bg-top{display:inline-block;background:#111;color:var(--blond);font-family:var(--type);font-weight:700;font-size:.7rem;letter-spacing:.18em;padding:4px 10px}
+.bg-art{display:block;width:100%;height:auto;margin:10px 0 2px}
+.bg-card h2{margin:4px 0 6px;font-family:var(--head);font-size:1.7rem;line-height:1;letter-spacing:.03em}
+.bg-card h2 span{display:block;color:var(--red);font-size:2.1rem}
+.bg-price{display:flex;align-items:center;justify-content:center;gap:14px;margin:6px 0 4px}
+.bg-price s{font-family:var(--type);font-weight:700;color:#6a6253;text-decoration-color:var(--red);text-decoration-thickness:3px}
+.bg-price b{display:inline-flex;align-items:center;justify-content:center;width:84px;height:84px;font-family:var(--head);font-size:2.3rem;color:#fff;background:var(--red);clip-path:polygon(50% 0,61% 13%,77% 6%,80% 22%,96% 25%,89% 40%,100% 52%,88% 63%,94% 79%,77% 81%,72% 97%,58% 89%,45% 100%,36% 87%,19% 93%,18% 77%,2% 70%,11% 56%,0 43%,13% 33%,8% 17%,25% 17%,30% 2%,43% 12%);transform:rotate(-8deg);animation:bgpulse 1s ease-in-out infinite}
+@keyframes bgpulse{50%{transform:rotate(-4deg) scale(1.07)}}
+.bg-pitch{margin:4px 0 8px;font-family:var(--type);font-weight:700;font-size:.9rem;line-height:1.45}
+.bg-timer{display:inline-block;margin:2px 0 12px;padding:4px 10px;border:2px solid var(--red);color:var(--red);font-family:var(--type);font-weight:700;font-size:.78rem;letter-spacing:.12em}
+.bg-timer b{display:inline-block;min-width:4.5em}
+.bg-timer.ext{background:var(--red);color:#fff}
+.bg-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.bg-fine{margin:12px 0 0;font-size:.62rem;color:#6a6253;font-style:italic}
+.bg-reveal{margin-top:6px;border-top:2px dashed #b9ad94;padding-top:12px}
+.bg-reveal p{margin:8px 0 12px;font-size:.95rem;line-height:1.45;text-align:left}
+.bg-stamp{display:inline-block;font-family:var(--head);font-weight:700;font-size:1.6rem;letter-spacing:.1em;padding:2px 14px;border:4px double currentColor;background:#fffbf0;transform:rotate(-6deg);animation:stampin2 .4s cubic-bezier(.2,1.6,.4,1)}
+.bg-stamp.bad{color:var(--red)}.bg-stamp.good{color:var(--green)}
+@keyframes stampin2{0%{transform:rotate(-18deg) scale(2.4);opacity:0}100%{transform:rotate(-6deg) scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.bg-card,.bg-price b,.bg-stamp,.bg-ov{animation:none}}
 /* laptop-height fitting (desktop layout) */
 @media (min-width:901px){
  .pf-figbtn{width:clamp(140px,calc((100vh - 440px) * .83),230px)}
@@ -760,7 +787,7 @@ const Prof=(()=>{const art=$('#pfArt'),sc=$('#pfScrib'),pen=$('#pfPencil'),textE
  const WRONG=["Hmm. Take a closer look at my notes.","Not quite. Even good detectives miss a clue. Read why.","False lead. Check the evidence again before the next one."];
  const TIPS=[['STOP','Notice any emotional pressure. Fear and urgency stop you from checking.'],['INVESTIGATE','Who made this, and who profits if you believe it?'],['TRACE','Find the original study or claim, not someone’s summary of it.'],['COMPARE','What do independent, higher-quality sources find?'],['CONSIDER','What happens if people act on this claim?'],['CHECK THE DOSE','Almost anything is harmful in a big enough amount. How much, how often?'],['MICE AREN’T PEOPLE','Was it tested in humans, in animals, or in a dish of cells?'],['TOGETHER ISN’T CAUSE','Two things rising together doesn’t mean one caused the other.']];
  let ti=0;
- function react(ok,kind){if(!ok)return say(pick(WRONG),'falselead');if(kind==='supported')say(pick(SUPP),'checked',false,'celebrate');else if(kind==='evidence')say(pick(EVID),'checked',false,'celebrate');else say(pick(RIGHT),'cracked',false,'celebrate')}
+ function react(ok,kind){if(typeof trackStreak==='function')trackStreak(ok);if(!ok)return say(pick(WRONG),'falselead');if(kind==='supported')say(pick(SUPP),'checked',false,'celebrate');else if(kind==='evidence')say(pick(EVID),'checked',false,'celebrate');else say(pick(RIGHT),'cracked',false,'celebrate')}
  const tipBtn=$('#pfTip'),tipText=$('#pfTipText'),tipFoot=$('#pfTipFoot');let tipT=null;
  tipBtn.onclick=()=>{const [h,t]=TIPS[ti%TIPS.length],n=ti%TIPS.length+1;ti++;
   if(small()){say('Field tip '+n+', '+h.toLowerCase()+': '+t,null);return}
@@ -831,6 +858,34 @@ function render(){$$('.tbtn[data-go]').forEach(b=>b.setAttribute('aria-pressed',
  return item(d,route.i||0)}
 function openDeck(id){const d=deckById(id);if(d.custom)return go('deck',{deck:id});const p=progress(d);if(p.done===0)return go('deck',{deck:id,i:'intro'});if(p.done===p.n)return go('deck',{deck:id,i:'end'});go('deck',{deck:id,i:d.items.findIndex(it=>!seen(it.key))})}
 
+
+
+/* ---------- gag: three misses in a row may summon a bridge salesman (once per game) ---------- */
+let wrongRun=0;
+function trackStreak(ok){if(ok){wrongRun=0;return}wrongRun++;if(wrongRun>=3&&!LS.get('md2_bridge',false)&&!$('#bridge')&&Math.random()<.6){wrongRun=-99;setTimeout(bridgeGag,1800)}}
+const BRIDGE_SVG='<svg class="bg-art" viewBox="0 0 320 128" aria-hidden="true" focusable="false"><g fill="none" stroke="#111" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="1.2" opacity=".55"><path d="M0 114h320M14 120h80M120 120h110M250 120h60M40 125h60M170 125h90"/></g><g stroke-width="1.1" opacity=".8"><path d="M112 22L60 90M112 22L80 90M112 22L140 90M112 22L162 90M224 22L172 90M224 22L194 90M224 22L252 90M224 22L276 90"/></g><path d="M0 52Q56 94 112 22Q168 104 224 22Q280 94 320 52" stroke-width="2.4"/><g stroke-width="1" opacity=".75"><path d="M20 67v23M40 78v12M60 82v8M80 76v14M96 60v30M128 46v44M144 62v28M160 68v22M176 68v22M192 62v28M208 46v44M240 60v30M256 76v14M276 82v8M296 78v12"/></g><path d="M0 90h320M0 96h320" stroke-width="2.6"/></g><g stroke="#111" stroke-width="2.2" fill="#f5ecd6"><path d="M96 108V30l3-10h26l3 10v78z"/><path d="M208 108V30l3-10h26l3 10v78z"/></g><g fill="#111"><path d="M101 96V52q0-14 4.5-14t4.5 14v44zM114 96V52q0-14 4.5-14t4.5 14v44zM213 96V52q0-14 4.5-14t4.5 14v44zM226 96V52q0-14 4.5-14t4.5 14v44z"/><rect x="98" y="26" width="28" height="3"/><rect x="210" y="26" width="28" height="3"/></g></svg>';
+function bridgeGag(){if(LS.get('md2_bridge',false)||$('#bridge'))return;LS.set('md2_bridge',true);wrongRun=0;
+ const prev=document.activeElement,ov=document.createElement('div');ov.id='bridge';ov.className='bg-ov';
+ ov.innerHTML=`<div class="bg-card" role="dialog" aria-modal="true" aria-labelledby="bgT" aria-describedby="bgPitch">
+  <div class="bg-top">★ ONE-TIME OFFER · TODAY ONLY ★</div>${BRIDGE_SVG}
+  <h2 id="bgT">BUY THE <span>BROOKLYN BRIDGE</span></h2>
+  <div class="bg-price"><s>$25,000,000</s><b>$1</b></div>
+  <p class="bg-pitch" id="bgPitch">100% genuine. Comes with a deed and the toll booth. Three other buyers are looking at it right now. Trust me.</p>
+  <div class="bg-timer" aria-hidden="true">OFFER ENDS IN <b id="bgClock">0:09</b></div>
+  <div class="bg-btns"><button class="btn red" id="bgBuy">Buy it for $1!</button><button class="btn" id="bgNo">Nice try, pal</button></div>
+  <p class="bg-fine">*Seller not affiliated with the City of New York. No refunds. No bridge.</p>
+  <div class="bg-reveal" id="bgReveal" hidden></div></div>`;
+ document.body.appendChild(ov);sfx.ding();let n=9;const clk=$('#bgClock');
+ const iv=setInterval(()=>{n--;if(n<0){n=9;clk.textContent='EXTENDED!';clk.parentNode.classList.add('ext');setTimeout(()=>clk.parentNode.classList.remove('ext'),900);return}clk.textContent='0:0'+n},1000);
+ const close=()=>{clearInterval(iv);ov.classList.add('out');setTimeout(()=>ov.remove(),260);document.removeEventListener('keydown',key,true);if(prev&&prev.focus)prev.focus()};
+ const key=e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();close()}else if(e.key==='Tab'){const f=[...ov.querySelectorAll('button')].filter(b=>!b.closest('[hidden]'));const i=f.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}}else e.stopPropagation()};
+ document.addEventListener('keydown',key,true);
+ const reveal=bought=>{clearInterval(iv);$('.bg-timer',ov).remove();$('.bg-btns',ov).remove();const r=$('#bgReveal');r.hidden=false;
+  r.innerHTML=`<span class="bg-stamp ${bought?'bad':'good'}">${bought?'CONNED!':'CON SPOTTED'}</span><p>${bought?"Gotcha. That's the oldest con in New York.":"Good instincts, detective."} Spot the tricks: <b>fake urgency</b> (that clock never runs out), <b>a price too good to be true</b>, and <b>&ldquo;trust me&rdquo; instead of proof</b>. Misinformation sells the same way.</p><button class="btn red" id="bgBack">Back to the case</button>`;
+  bought?sfx.stamp():sfx.ding();Prof.say(bought?"Sold a bridge? Three misses in a row, detective. Slow down and read my notes.":"Ha! You spotted that con. Bring the same skepticism back to the case.",bought?'falselead':'cracked',false,'swap');
+  $('#bgBack').onclick=close;$('#bgBack').focus()};
+ $('#bgBuy').onclick=()=>reveal(true);$('#bgNo').onclick=()=>reveal(false);ov.addEventListener('click',e=>{if(e.target===ov)close()});
+ setTimeout(()=>{const b=$('#bgNo');if(b)b.focus()},60)}
 
 /* ---------- home ---------- */
 const HOME_LINES=["Every claim leaves fingerprints. Let's go find them.","Back on the beat, detective? The evidence won't examine itself.","Somebody's selling fear again. Let's see what the evidence says."];
