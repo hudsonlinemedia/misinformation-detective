@@ -407,7 +407,7 @@ textarea.reflect{width:100%;min-height:140px;font:inherit;font-family:var(--type
   <button class="tbtn" data-go="handbook">Handbook</button>
   <button class="tbtn opt" data-go="locker">Evidence locker</button>
   <button class="tbtn" id="soundBtn" aria-pressed="false">Sound: off</button>
-  <span class="pts" id="ptsBadge" role="status" aria-live="polite">★ 0 / 100</span>
+  <span class="pts" id="ptsBadge" role="status" aria-live="polite">★ 0 pts</span>
  </nav>
 </div></header>
 <div id="stage">
@@ -574,21 +574,18 @@ if(!Object.keys(marks).length){const old=LS.get('md_independent_points_v2',{});i
 let answers=LS.get('md2_answers',{})||{};
 const SECTIONS=[['case:snake:','Snake Oil Never Dies'],['case:vax:','The Vaccine Conspiracy'],['case:food:','Is Your Food Poisoning You?'],['case:lab:','The Bad Science Laboratory'],['case:money:','Follow the Money'],['ad:','Ad Detective'],['bias:','Bias & Fallacy Lab'],['myth:food:','Food Myth Busters'],['myth:vax:','Vaccine Myth Busters'],['ancestor:','Ancestral Diet Detective'],['detective:','Bad Science Detective'],['final:','Final Mystery']];
 const counted=k=>SECTIONS.some(([p])=>k.startsWith(p));
-/* 100-point lesson: each section's share of the 100 is proportional to its number of questions (whole numbers, largest remainder) */
-let SECMAX=null,lastGain=0;
+/* one point per question: each section is worth its number of questions */
+let lastGain=0;
 function secN(p){if(p==='detective:')return detCount();const d=decks.find(x=>x.prefix===p);return d&&d.items?d.items.length:0}
-function secMax(){if(SECMAX)return SECMAX;const ns=SECTIONS.map(([p])=>secN(p)),N=ns.reduce((a,b)=>a+b,0),m={};if(!N)return m;
- const raw=ns.map(n=>n*100/N),fl=raw.map(Math.floor);let left=100-fl.reduce((a,b)=>a+b,0);
- raw.map((r,i)=>[r-fl[i],i]).sort((a,b)=>b[0]-a[0]).slice(0,left).forEach(([,i])=>fl[i]++);
- SECTIONS.forEach(([p],i)=>m[p]={max:fl[i],n:ns[i]});return SECMAX=m}
 const correctIn=p=>Object.entries(marks).filter(([k,v])=>v===true&&k.startsWith(p)).length;
-const maxOf=p=>(secMax()[p]||{max:0}).max;
-const score=p=>{const s=secMax()[p];return s&&s.n?Math.round(s.max*Math.min(correctIn(p),s.n)/s.n):0};
+const maxOf=p=>secN(p);
+const score=p=>Math.min(correctIn(p),secN(p));
 const total=()=>SECTIONS.reduce((a,[p])=>a+score(p),0);
+const maxTotal=()=>SECTIONS.reduce((a,[p])=>a+secN(p),0);
 function award(key,ok){if(Object.prototype.hasOwnProperty.call(marks,key))return false;const sec=SECTIONS.find(([p])=>key.startsWith(p)),before=sec?score(sec[0]):0;marks[key]=!!ok;lastGain=sec?score(sec[0])-before:0;LS.set(MK,marks);updatePts(ok);return true}
 function record(key,val){answers[key]=val;LS.set('md2_answers',answers)}
 const seen=k=>answers[k]!==undefined||Object.prototype.hasOwnProperty.call(marks,k);
-function updatePts(bump){const b=$('#ptsBadge');b.textContent='★ '+total()+' / 100';b.setAttribute('aria-label','Score: '+total()+' out of 100 points');if(bump){b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump')}}
+function updatePts(bump){const b=$('#ptsBadge');b.textContent='★ '+total()+' / '+maxTotal();b.setAttribute('aria-label','Score: '+total()+' out of '+maxTotal()+' points');if(bump){b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump')}}
 
 /* ---------- sound ---------- */
 const sfx={on:LS.get('md2_sound',false),ctx:null,n:0,
@@ -743,7 +740,7 @@ function home(){const my=tok;const all=decks.filter(d=>d.items),ex=all.reduce((a
   <div class="hm-title"><div class="kicker" style="background:var(--red)">MEDICAL ANTHROPOLOGY · INTERACTIVE LAB</div><h1>THE MISINFORMATION <span>DETECTIVE</span></h1><p class="sub">Bad Science, Big Profits &amp; the Business of Fear</p><p class="hm-credit">STARRING <b>PROF HONEY</b></p>
    <div class="hm-balloon"><span class="pf-name" aria-hidden="true">PROF HONEY</span><p id="hmSay" aria-hidden="true"></p><span class="sr">Prof Honey says: ${esc(line)}</span></div>
    <div class="row"><button class="btn red hm-go" data-hact="board">${ex?'Continue investigating →':'Start investigating →'}</button><button class="btn" data-hact="handbook">Detective's handbook</button></div>
-   <p class="hm-stat">${ex?`${ex} exhibits examined · score ${total()} / 100`:`${decks.length} files · one score out of 100`}</p></div></div>
+   <p class="hm-stat">${ex?`${ex} exhibits examined · score ${total()} / ${maxTotal()}`:`${decks.length} files · ${maxTotal()} questions · 1 point each`}</p></div></div>
  </section>`;
  const act={board:()=>go('board'),handbook:()=>go('handbook')};
  $$('[data-hact]',view).forEach(b=>b.onclick=()=>act[b.dataset.hact]());
@@ -754,12 +751,12 @@ function home(){const my=tok;const all=decks.filter(d=>d.items),ex=all.reduce((a
 function folder(d){const p=progress(d),pts=d.prefix?score(d.prefix):null;const closed=p.n&&p.done===p.n;
  const meta=d.custom==='videos'?'2 PAIRED VIDEOS · '+d.time.toUpperCase():d.custom==='detective'?'3 READINGS · '+d.time.toUpperCase():(d.items.length+' EXHIBITS · '+d.time.toUpperCase());
  return `<button class="folder" data-tab="${esc(d.tab)}" data-open="${d.id}"><div class="thumb">${thumbSVG(d.art)}</div><h3>${esc(d.title)}</h3><div class="meta">${esc(meta)}</div><p class="desc">${esc(d.topic)}</p>${p.n?`<div class="bar" aria-hidden="true"><i style="width:${Math.round(p.done/p.n*100)}%"></i></div><div class="score"><span>${p.done}/${p.n} examined</span><span>${pts} / ${maxOf(d.prefix)} pts</span></div>`:`<div class="score"><span>Separate score inside</span><span></span></div>`}${closed?'<span class="fstamp">CLOSED</span>':d.isNew?'<span class="fstamp new">NEW</span>':''}</button>`}
-function recordHTML(){return `<article class="sheet record" id="record"><div class="kicker">FOR YOUR INSTRUCTOR</div><h2>Detective's record</h2><p class="muted">Show your instructor your section scores after each round. The whole lesson is worth 100 points. Each section is worth a share of the 100, based on how many questions it has, and correct first attempts earn the points. Scores are saved only in this browser on this device, so keep using the same browser. The video room shows its own score.</p><div class="tiles">${SECTIONS.map(([p,n])=>`<div class="tile"><small>${esc(n)}</small><strong>${score(p)} / ${maxOf(p)} pts</strong></div>`).join('')}</div><div class="row"><strong style="font-family:var(--type);font-size:1.15rem">Total: ${total()} / 100 points</strong><span style="flex:1"></span><button class="btn" id="resetBtn">Reset all scores</button></div></article>`}
+function recordHTML(){return `<article class="sheet record" id="record"><div class="kicker">FOR YOUR INSTRUCTOR</div><h2>Detective's record</h2><p class="muted">Show your instructor your section scores after each round. Each question is worth 1 point, for ${maxTotal()} points in all. Only correct first attempts count. Scores are saved only in this browser on this device, so keep using the same browser. The video room shows its own score.</p><div class="tiles">${SECTIONS.map(([p,n])=>`<div class="tile"><small>${esc(n)}</small><strong>${score(p)} / ${maxOf(p)} pts</strong></div>`).join('')}</div><div class="row"><strong style="font-family:var(--type);font-size:1.15rem">Total: ${total()} / ${maxTotal()} points</strong><span style="flex:1"></span><button class="btn" id="resetBtn">Reset all scores</button></div></article>`}
 const WELCOME="Welcome, detectives. Health claims are everywhere, and some of them are built to sell you fear. Your job: examine the evidence, spot the tricks, and decide what the evidence actually supports. Pick a case file to begin.";
 function board(){const my=tok;
  view.innerHTML=`<section class="hero"><div class="kicker" style="background:var(--red)">MEDICAL ANTHROPOLOGY · INTERACTIVE LAB</div><h1>THE MISINFORMATION <span>DETECTIVE</span></h1><p class="sub">Bad Science, Big Profits &amp; the Business of Fear</p></section>
  <article class="sheet brief"><div class="kicker">BRIEFING FROM PROF HONEY</div><p class="tw" id="twW" aria-hidden="true"></p><span class="sr">${esc(WELCOME)}</span>
- <ul class="rules"><li><b>Read the evidence first</b>Each claim types out like a police report. Study it before you answer.</li><li><b>One score out of 100</b>The whole lesson is worth 100 points. Correct first attempts earn points; wrong ones earn 0, but you still get Prof Honey's notes.</li><li><b>Any order</b>Every file is open. Work through them in any order.</li><li><b>Show your instructor</b>Your section scores are in the Detective's record at the bottom of this page.</li></ul>
+ <ul class="rules"><li><b>Read the evidence first</b>Each claim types out like a police report. Study it before you answer.</li><li><b>1 point per question</b>Each correct first attempt earns 1 point. Wrong ones earn 0, but you still get Prof Honey's notes.</li><li><b>Any order</b>Every file is open. Work through them in any order.</li><li><b>Show your instructor</b>Your section scores are in the Detective's record at the bottom of this page.</li></ul>
  <div class="row"><button class="btn red" id="startBtn">Open Case 01 →</button><button class="btn" data-go2="handbook">Detective's handbook</button><button class="btn" data-go2="record">My scores ↓</button></div></article>
  <h2 class="group-h" id="grp-cases">CASE FILES</h2><div class="folders">${decks.filter(d=>d.group==='cases').map(folder).join('')}</div>
  <h2 class="group-h" id="grp-special">SPECIAL INVESTIGATIONS</h2><div class="folders">${decks.filter(d=>d.group==='special').map(folder).join('')}</div>
@@ -784,7 +781,7 @@ function briefing(d){const my=tok;
  view.innerHTML=bar(d,null)+`<article class="sheet"><div class="kicker">${esc(d.tab)} · ${esc(d.time)}</div><h2>${esc(d.title)}</h2><p class="muted" style="margin-top:0">${esc(d.topic)}</p>
  <div class="exrow"><figure class="photo" style="margin:6px 0 0">${exhibitSVG(d.art,fxFor(d))}<span class="clip"></span><span class="exlabel">CASE PHOTO</span></figure>
  <div class="transcript"><p class="ttag">CASE BRIEFING</p><p class="tw" id="twB" aria-hidden="true"></p><span class="sr">${esc(d.intro)}</span></div></div>
- <p class="muted">${d.items.length} exhibits, worth ${maxOf(d.prefix)} of your 100 points. Correct first answers earn them. You'll get Prof Honey's notes after every answer.</p>
+ <p class="muted">${d.items.length} exhibits, 1 point each for a correct first answer. You'll get Prof Honey's notes after every answer.</p>
  <div class="navrow"><button class="skip" id="skip">Skip typing ▸▸</button><span class="sp"></span><button class="btn red" id="begin">Open exhibit 1 →</button></div></article>`;
  bindBar(d);$('#begin').onclick=()=>go('deck',{deck:d.id,i:0});$('#skip').onclick=()=>{skipping=true};
  Prof.say(d.prof,'inspecting',false,'swap');
@@ -837,7 +834,7 @@ function closing(d){const n=d.items.length,ok=d.items.filter(it=>marks[it.key]==
 /* ---------- certificate ---------- */
 function certificate(){const d=deckById('final');const name=LS.get('md2_name','');const today=new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});
  view.innerHTML=bar(d,null)+`<article class="sheet cert"><div class="kicker">OFFICIAL RECORD</div><h2 style="font-size:2.1rem">CERTIFIED MISINFORMATION DETECTIVE</h2><div class="bigstamp" style="font-size:1.6rem">FINAL FILE CLOSED</div>
- <p>This certifies that</p><label class="sr" for="certName">Your name</label><input id="certName" placeholder="Type your name" value="${esc(name)}"><p>completed the final investigation of <em>The Misinformation Detective</em> with a score of <strong>${total()} out of 100</strong> on ${esc(today)}.</p>
+ <p>This certifies that</p><label class="sr" for="certName">Your name</label><input id="certName" placeholder="Type your name" value="${esc(name)}"><p>completed the final investigation of <em>The Misinformation Detective</em> with a score of <strong>${total()} out of ${maxTotal()}</strong> on ${esc(today)}.</p>
  <p style="max-width:560px;margin:14px auto">Your most useful tool is not suspicion alone. It is a method for checking evidence.</p>
  <ol class="steps" style="max-width:560px;margin:14px auto;text-align:left"><li><span><strong>Stop:</strong> Notice emotional pressure.</span></li><li><span><strong>Investigate:</strong> Identify the creator and incentives.</span></li><li><span><strong>Trace:</strong> Find the original study or claim.</span></li><li><span><strong>Compare:</strong> Seek independent, higher-quality evidence.</span></li><li><span><strong>Consider:</strong> Ask what could happen if people act on it.</span></li></ol>
  <p class="muted" style="max-width:600px;margin:10px auto">Remember: misinformation describes false or misleading information; disinformation adds the question of deliberate intent, which is not always observable.</p>
