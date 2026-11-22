@@ -407,6 +407,7 @@ textarea.reflect{width:100%;min-height:140px;font:inherit;font-family:var(--type
 
 /* shell game */
 .sh-card h2 span{font-size:1.9rem}
+.sh-card h2{font-size:1.5rem}
 .sh-table{position:relative;width:min(330px,100%);height:150px;margin:10px auto 12px;box-sizing:border-box;border:3px solid #111;border-radius:12px;background:radial-gradient(ellipse at 50% 40%,#2f6b3f,#1c4127 80%);box-shadow:inset 0 0 0 4px #6b4a2a}
 .sh-c{position:absolute;bottom:14px;width:84px;height:86px;margin:0 0 0 10px;padding:0;border:0;background:none;cursor:pointer;filter:drop-shadow(3px 4px 0 rgba(0,0,0,.45));transition:left .28s cubic-bezier(.4,0,.2,1),transform .35s cubic-bezier(.3,1.4,.5,1);z-index:2}
 .sh-c svg{display:block;width:100%;height:100%}
@@ -891,14 +892,11 @@ function openDeck(id){const d=deckById(id);if(d.custom)return go('deck',{deck:id
 
 
 
-/* ---------- gags: three classic cons, each once per game, never back to back ---------- */
-const gagRun={wrong:0,right:0,answered:0,cool:0};
-function trackStreak(ok){const g=gagRun;g.answered++;if(g.cool>0)g.cool--;if(ok){g.right++;g.wrong=0}else{g.wrong++;g.right=0}
- if($('.gag-ov')||g.cool>0)return;
- if(!ok&&g.wrong>=3&&!LS.get('md2_bridge',false)&&Math.random()<.6)fireGag(bridgeGag,2000);
- else if(ok&&g.right>=3&&!LS.get('md2_shell',false)&&Math.random()<.5)fireGag(shellGag,4600);
- else if(g.answered>=9&&!LS.get('md2_prize',false)&&Math.random()<.22)fireGag(prizeGag,ok?4600:2000)}
-function fireGag(fn,ms){gagRun.cool=5;gagRun.wrong=0;gagRun.right=0;setTimeout(fn,ms)}
+/* ---------- gags: three classic cons; only after 3 wrong answers in a row, each once per game ---------- */
+const gagRun={wrong:0};
+function trackStreak(ok){if(ok){gagRun.wrong=0;return}gagRun.wrong++;if(gagRun.wrong<3||$('.gag-ov'))return;
+ const left=[['md2_bridge',bridgeGag],['md2_shell',shellGag],['md2_prize',prizeGag]].filter(([f])=>!LS.get(f,false));
+ if(left.length&&Math.random()<.6){gagRun.wrong=0;setTimeout(pick(left)[1],2000)}}
 function gagOpen(flag,cls,html){if($('.gag-ov')||LS.get(flag,false))return null;LS.set(flag,true);const prev=document.activeElement,ov=document.createElement('div');ov.className='gag-ov '+cls;ov.innerHTML=html;document.body.appendChild(ov);
  const g={ov,timers:[],close(){g.timers.forEach(t=>{clearInterval(t);clearTimeout(t)});ov.classList.add('out');setTimeout(()=>ov.remove(),260);document.removeEventListener('keydown',key,true);if(prev&&prev.focus)prev.focus()}};
  const key=e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();g.close()}else if(e.key==='Tab'){const f=[...ov.querySelectorAll('button:not(:disabled)')].filter(b=>!b.closest('[hidden]'));if(!f.length)return;const i=f.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}}else e.stopPropagation()};
@@ -906,7 +904,7 @@ function gagOpen(flag,cls,html){if($('.gag-ov')||LS.get(flag,false))return null;
 function gagReveal(g,box,good,stamp,lead,body,profLine,pose){box.hidden=false;box.innerHTML=`<span class="bg-stamp ${good?'good':'bad'}">${stamp}</span><p>${lead} ${body}</p><button class="btn red gag-back">Back to the case</button>`;
  good?sfx.ding():sfx.stamp();Prof.say(profLine,pose,false,'swap');const b=$('.gag-back',box);b.onclick=()=>g.close();b.focus()}
 
-/* 1. the Brooklyn Bridge: three misses in a row */
+/* 1. the Brooklyn Bridge */
 const BRIDGE_SVG='<svg class="bg-art" viewBox="0 0 320 128" aria-hidden="true" focusable="false"><g fill="none" stroke="#111" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="1.2" opacity=".55"><path d="M0 114h320M14 120h80M120 120h110M250 120h60M40 125h60M170 125h90"/></g><g stroke-width="1.1" opacity=".8"><path d="M112 22L60 90M112 22L80 90M112 22L140 90M112 22L162 90M224 22L172 90M224 22L194 90M224 22L252 90M224 22L276 90"/></g><path d="M0 52Q56 94 112 22Q168 104 224 22Q280 94 320 52" stroke-width="2.4"/><g stroke-width="1" opacity=".75"><path d="M20 67v23M40 78v12M60 82v8M80 76v14M96 60v30M128 46v44M144 62v28M160 68v22M176 68v22M192 62v28M208 46v44M240 60v30M256 76v14M276 82v8M296 78v12"/></g><path d="M0 90h320M0 96h320" stroke-width="2.6"/></g><g stroke="#111" stroke-width="2.2" fill="#f5ecd6"><path d="M96 108V30l3-10h26l3 10v78z"/><path d="M208 108V30l3-10h26l3 10v78z"/></g><g fill="#111"><path d="M101 96V52q0-14 4.5-14t4.5 14v44zM114 96V52q0-14 4.5-14t4.5 14v44zM213 96V52q0-14 4.5-14t4.5 14v44zM226 96V52q0-14 4.5-14t4.5 14v44z"/><rect x="98" y="26" width="28" height="3"/><rect x="210" y="26" width="28" height="3"/></g></svg>';
 function bridgeGag(){const g=gagOpen('md2_bridge','bg-ov',`<div class="bg-card" role="dialog" aria-modal="true" aria-labelledby="bgT" aria-describedby="bgPitch">
   <div class="bg-top">★ ONE-TIME OFFER · TODAY ONLY ★</div>${BRIDGE_SVG}
@@ -922,12 +920,12 @@ function bridgeGag(){const g=gagOpen('md2_bridge','bg-ov',`<div class="bg-card" 
   gagReveal(g,$('.bg-reveal',ov),!bought,bought?'CONNED!':'CON SPOTTED',bought?"Gotcha. That's the oldest con in New York.":"Good instincts, detective.","Spot the tricks: <b>fake urgency</b> (that clock never runs out), <b>a price too good to be true</b>, and <b>&ldquo;trust me&rdquo; instead of proof</b>. Misinformation sells the same way.",bought?"Sold a bridge? Three misses in a row, detective. Slow down and read my notes.":"Ha! You spotted that con. Bring the same skepticism back to the case.",bought?'falselead':'cracked')};
  $('[data-g=buy]',ov).onclick=()=>go(true);$('[data-g=no]',ov).onclick=()=>go(false);setTimeout(()=>{const b=$('[data-g=no]',ov);if(b)b.focus()},60)}
 
-/* 2. the shell game: a hot streak attracts a street hustler */
+/* 2. the shell game: a cold streak attracts a street hustler */
 const CUP_SVG='<svg viewBox="0 0 90 92" aria-hidden="true"><path d="M24 12L13 83Q45 93 77 83L66 12Q45 5 24 12Z" fill="#c0202b" stroke="#111" stroke-width="3" stroke-linejoin="round"/><path d="M24 12Q45 19 66 12" fill="none" stroke="#111" stroke-width="2.5"/><path d="M19 46Q45 54 71 46" fill="none" stroke="#fffdf4" stroke-width="7"/><path d="M16 66Q45 74 74 66" fill="none" stroke="#fffdf4" stroke-width="5"/><path d="M31 20L25 76" stroke="#fff" stroke-width="3" opacity=".45" stroke-linecap="round"/><path d="M13 83Q45 93 77 83" fill="none" stroke="#111" stroke-width="3"/></svg>';
 function shellGag(){const g=gagOpen('md2_shell','sh-ov',`<div class="bg-card sh-card" role="dialog" aria-modal="true" aria-labelledby="shT" aria-describedby="shSay">
   <div class="bg-top">★ STEP RIGHT UP · FIND THE BALL ★</div>
-  <h2 id="shT">HOT STREAK, <span>DETECTIVE!</span></h2>
-  <p class="bg-pitch" id="shSay" aria-live="polite">Three right in a row? You've got sharp eyes. Keep 'em on the ball&hellip;</p>
+  <h2 id="shT">DOWN ON YOUR LUCK? <span>WIN IT BACK!</span></h2>
+  <p class="bg-pitch" id="shSay" aria-live="polite">Three misses in a row? Shake it off, detective. Find the ball and your luck turns around. Keep 'em on the ball&hellip;</p>
   <div class="sh-table"><span class="sh-ball" aria-hidden="true"></span>${[0,1,2].map(i=>`<button class="sh-c" data-i="${i}" disabled aria-label="Cup ${i+1}">${CUP_SVG}</button>`).join('')}</div>
   <div class="bg-btns"><button class="btn" data-g="walk">Walk away</button></div>
   <p class="bg-fine">*Just for fun. Your score is not at stake. Neither is the hustler&rsquo;s honesty.</p>
@@ -943,10 +941,10 @@ function shellGag(){const g=gagOpen('md2_shell','sh-ov',`<div class="bg-card sh-
   if(picked){picked.classList.add('lift');sfx.page();setTimeout(()=>{cups.forEach(c=>c.classList.add('lift'));say.textContent='Empty? All of them? Funny. The ball is in the hustler’s hand.'},800)}
   else say.textContent='Walking away from a street game. Smart.';
   const w=$('[data-g=walk]',ov);if(w)w.parentNode.remove();
-  setTimeout(()=>gagReveal(g,$('.bg-reveal',ov),!picked,picked?'RIGGED!':'SMART MOVE',picked?'The ball was never under any cup. The hustler palmed it while you watched the shuffle.':'Good call. In a street shell game the ball usually isn&rsquo;t under any cup.','When someone else controls the evidence and the rules, careful watching can&rsquo;t win. <b>Ask who&rsquo;s running the game</b> and whether you can check for yourself. (Your score is safe.)',picked?"Rigged from the start. Always ask who controls the evidence.":"Smart. When you can't check for yourself, don't play the game.",picked?'falselead':'cracked'),picked?1700:200)};
+  setTimeout(()=>gagReveal(g,$('.bg-reveal',ov),!picked,picked?'RIGGED!':'SMART MOVE',picked?'The ball was never under any cup. The hustler palmed it while you watched the shuffle.':'Good call. In a street shell game the ball usually isn&rsquo;t under any cup.','&ldquo;Win it back&rdquo; is the hook: it targets people who just lost. And when someone else controls the evidence and the rules, careful watching can&rsquo;t win. <b>Ask who&rsquo;s running the game</b> and whether you can check for yourself. (Your score is safe.)',picked?"Rigged from the start. Shake off those misses the honest way: read my notes.":"Smart. When you can't check for yourself, don't play the game.",picked?'falselead':'cracked'),picked?1700:200)};
  cups.forEach(c=>c.onclick=()=>end(c));$('[data-g=walk]',ov).onclick=()=>end(null);setTimeout(()=>{const b=$('[data-g=walk]',ov);if(b)b.focus()},60)}
 
-/* 3. the millionth-visitor prize popup: comes out of nowhere */
+/* 3. the millionth-visitor prize popup */
 const GIFT_SVG='<svg viewBox="0 0 120 100" aria-hidden="true"><g stroke="#111" stroke-width="2.5" stroke-linejoin="round"><rect x="18" y="44" width="84" height="50" fill="#2f7bd8"/><rect x="12" y="30" width="96" height="16" fill="#3b8cf0"/><rect x="53" y="30" width="14" height="64" fill="#ffd23c"/><path d="M60 30C44 6 24 14 36 26c6 5 24 4 24 4zM60 30C76 6 96 14 84 26c-6 5-24 4-24 4z" fill="#ffd23c"/></g><g fill="#ffd23c" stroke="#111" stroke-width="1.5"><path d="M6 12l3 7 7 2-7 2-3 7-3-7-7-2 7-2z" transform="translate(6 4)"/><path d="M6 12l3 7 7 2-7 2-3 7-3-7-7-2 7-2z" transform="translate(98 48) scale(.8)"/></g></svg>';
 function prizeGag(){const g=gagOpen('md2_prize','pz-ov',`<div class="pz-win" role="dialog" aria-modal="true" aria-labelledby="pzT" aria-describedby="pzBody">
   <div class="pz-bar"><span>★ CONGRATULATIONS!!! ★ ★ ★</span><span class="pz-ctl" aria-hidden="true"><i>_</i><i>□</i></span><button class="pz-x" aria-label="Close">×</button></div>
@@ -959,7 +957,7 @@ function prizeGag(){const g=gagOpen('md2_prize','pz-ov',`<div class="pz-win" rol
  let n=30;const clk=$('.pzClock',ov);g.timers.push(setInterval(()=>{n=n>1?n-1:30;clk.textContent='0:'+String(n).padStart(2,'0')},1000));
  const x=$('.pz-x',ov);let dodges=0;x.addEventListener('pointerenter',e=>{if(e.pointerType!=='mouse'||dodges>=3)return;dodges++;x.style.transform=`translate(${-60-Math.random()*220}px,${dodges%2?1:0}px)`});
  const go=took=>{g.timers.forEach(clearInterval);$('.pz-btns',ov).remove();$('.pz-no',ov).remove();$('.pz-timer',ov).remove();
-  gagReveal(g,$('.pz-reveal',ov),!took,took?'SCAMMED!':'SCAM SPOTTED',took?'There&rsquo;s no prize. There never is.':'Good eye. There was never a prize.','Spot the tricks: <b>a prize for a contest you never entered</b>, <b>a countdown to rush you</b>, <b>a close button that runs away</b>, and <b>a guilt-trip &ldquo;no&rdquo; button</b> (that one&rsquo;s called confirmshaming). Health scams use the same playbook: &ldquo;Limited supply! Act now!&rdquo;',took?"A million visitors, and every one of them a winner. Funny how that works.":"Nice. You can't win a contest you never entered.",took?'falselead':'cracked')};
+  gagReveal(g,$('.pz-reveal',ov),!took,took?'SCAMMED!':'SCAM SPOTTED',took?'There&rsquo;s no prize. There never is.':'Good eye. There was never a prize.','Spot the tricks: <b>a prize for a contest you never entered</b>, <b>a countdown to rush you</b>, <b>a close button that runs away</b>, and <b>a guilt-trip &ldquo;no&rdquo; button</b> (that one&rsquo;s called confirmshaming). Health scams use the same playbook: &ldquo;Limited supply! Act now!&rdquo;',took?"A million visitors, and every one of them a winner. Slow down, detective, and read my notes.":"Nice. You can't win a contest you never entered. Now back to the evidence.",took?'falselead':'cracked')};
  $('[data-g=claim]',ov).onclick=()=>go(true);$('[data-g=no]',ov).onclick=()=>go(false);x.onclick=()=>go(false);setTimeout(()=>{const b=$('[data-g=no]',ov);if(b)b.focus()},60)}
 
 /* ---------- home ---------- */
