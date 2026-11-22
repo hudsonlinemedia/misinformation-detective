@@ -305,6 +305,7 @@ textarea.reflect{width:100%;min-height:140px;font:inherit;font-family:var(--type
 .hm-credit{display:flex;align-items:center;gap:12px;margin:16px 0 0;font-family:var(--type);font-size:.8rem;letter-spacing:.32em;color:var(--paper)}
 .hm-credit::before,.hm-credit::after{content:"";height:2px;width:34px;background:var(--paper);opacity:.5}
 .hm-credit b{color:var(--blond)}
+@media (max-width:520px){.hm-credit{flex-wrap:wrap;gap:4px 10px;letter-spacing:.2em}.hm-credit::before,.hm-credit::after{display:none}.hm-credit span,.hm-credit b{width:100%}}
 .hm-balloon{position:relative;margin:30px 0 22px;max-width:470px;background:#fffdf4;color:#141414;border:3px solid #111;border-radius:22px;padding:24px 18px 16px;box-shadow:6px 6px 0 #000}
 .hm-balloon::before{content:"";position:absolute;left:-24px;top:34px;border-width:11px 24px 11px 0;border-style:solid;border-color:transparent #111 transparent transparent}
 .hm-balloon::after{content:"";position:absolute;left:-16px;top:37px;border-width:8px 17px 8px 0;border-style:solid;border-color:transparent #fffdf4 transparent transparent}
@@ -837,7 +838,7 @@ function home(){const my=tok;const all=decks.filter(d=>d.items),ex=all.reduce((a
  const first=!LS.get('md2_home',false);LS.set('md2_home',true);const line=first?HOME_LINES[0]:pick(HOME_LINES);
  view.innerHTML=`<section class="hm"><div class="hm-hero">
   <figure class="hm-panel" aria-hidden="true"><svg id="hmStage" viewBox="38 14 254 346" focusable="false"><defs><mask id="hmMask" maskUnits="userSpaceOnUse" x="0" y="0" width="300" height="360"><rect x="0" y="0" width="300" height="360" fill="#000"/><path id="hmScrib" d="${scribble(300,360,12)}" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/></mask></defs><rect x="0" y="0" width="300" height="360" fill="#f1ebdd"/><g mask="url(#hmMask)">${PROF.POSE.hero}</g><g id="hmPencil" opacity="0">${$('#pfPencil').innerHTML}</g></svg><span class="hm-cap">MEANWHILE, AT THE LAB…</span></figure>
-  <div class="hm-title"><div class="kicker" style="background:var(--red)">MEDICAL ANTHROPOLOGY · INTERACTIVE LAB</div><h1>THE MISINFORMATION <span>DETECTIVE</span></h1><p class="sub">Bad Science, Big Profits &amp; the Business of Fear</p><p class="hm-credit">STARRING <b>PROFESSOR HONEY</b></p>
+  <div class="hm-title"><div class="kicker" style="background:var(--red)">MEDICAL ANTHROPOLOGY · INTERACTIVE LAB</div><h1>THE MISINFORMATION <span>DETECTIVE</span></h1><p class="sub">Bad Science, Big Profits &amp; the Business of Fear</p><p class="hm-credit"><span>LEAD INVESTIGATOR</span> <b>PROFESSOR HONEY</b></p>
    <div class="hm-balloon"><span class="pf-name" aria-hidden="true">PROF HONEY</span><p id="hmSay" aria-hidden="true"></p><span class="sr">Prof Honey says: ${esc(line)}</span></div>
    <div class="row"><button class="btn red hm-go" data-hact="board">${ex?'Continue investigating →':'Start investigating →'}</button><button class="btn" data-hact="handbook">Detective's handbook</button></div>
    <p class="hm-stat">${ex?`${ex} exhibits examined · score ${total()} / ${maxTotal()}`:`${decks.length} files · ${maxTotal()} questions · 1 point each`}</p></div></div>
