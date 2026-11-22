@@ -752,6 +752,9 @@ function drawIn(path,pencil,dur,alive,rot){return new Promise(res=>{const len=pa
   if(pencil){const p=path.getPointAtLength(k);pencil.setAttribute('transform',`translate(${p.x.toFixed(1)},${p.y.toFixed(1)}) rotate(${rot||-40})`)}
   if(t<1)requestAnimationFrame(step);else{if(pencil){let o=1;const fade=()=>{o-=.1;pencil.setAttribute('opacity',Math.max(o,0));if(o>0)requestAnimationFrame(fade)};fade()}res()}};
  requestAnimationFrame(step)})}
+/* typing pauses while a gag is open */
+let gagPaused=false;
+function holdT(f,ms){return setTimeout(function w(){if(gagPaused)return setTimeout(w,150);f()},ms)}
 function type(el,text,speed,my){return new Promise(res=>{if(!el){res();return}
  if(reduce||skipping){el.textContent=text;res();return}
  el.textContent='';el.classList.add('typing');let i=0;
@@ -760,8 +763,8 @@ function type(el,text,speed,my){return new Promise(res=>{if(!el){res();return}
   i++;el.textContent=text.slice(0,i);if(text[i-1]!==' ')sfx.key();
   if(i>=text.length){el.classList.remove('typing');res();return}
   const ch=text[i-1];let d=speed*(.55+Math.random()*.9);if('.!?'.includes(ch))d+=speed*8;else if(',;:—'.includes(ch))d+=speed*3.5;
-  setTimeout(tick,d)};
- setTimeout(tick,speed)})}
+  holdT(tick,d)};
+ holdT(tick,speed)})}
 const PENCIL=s=>`<g class="pen" opacity="0"><g transform="scale(${s})"><polygon points="0,0 9,-3.5 9,3.5" fill="#333"/><polygon points="9,-3.5 24,-8 24,8 9,3.5" fill="#e9d3a6" stroke="#111" stroke-width="1.2" stroke-linejoin="round"/><rect x="24" y="-8" width="72" height="16" fill="#8f8f8f" stroke="#111" stroke-width="1.2"/><rect x="96" y="-8" width="11" height="16" fill="#bbb" stroke="#111" stroke-width="1.2"/><rect x="107" y="-8" width="13" height="16" rx="3" fill="#c0202b" stroke="#111" stroke-width="1.2"/></g></g>`;
 const EXSCRIB=scribble(240,170,11);
 function exhibitSVG(art,fx){const ht=fx==='halftone';return `<svg class="exsvg" viewBox="0 0 240 170" role="img" aria-label="Exhibit illustration">${ht?'<defs><pattern id="htP" width="6" height="6" patternUnits="userSpaceOnUse"><circle class="htC" cx="3" cy="3" r="0" fill="#000"/></pattern><mask id="htM" maskUnits="userSpaceOnUse" x="0" y="0" width="240" height="170"><rect width="240" height="170" fill="#fff"/><rect width="240" height="170" fill="url(#htP)"/></mask></defs>':''}<g>${ART[art]||ART.dossier}</g>${ht?'<rect class="htCover" width="240" height="170" fill="#f4ecdc" mask="url(#htM)"/>':''}</svg>`}
@@ -779,7 +782,7 @@ const thumbSVG=art=>`<svg viewBox="0 0 240 170" aria-hidden="true" focusable="fa
 const Prof=(()=>{const art=$('#pfArt'),sc=$('#pfScrib'),pen=$('#pfPencil'),textEl=$('#pfText'),srEl=$('#pfSr'),bub=$('.desk-bubble'),desk=$('#desk');let txTok=0;
  const text={set textContent(t){const my=++txTok;srEl.textContent=t;const m=/^(.+?[.!?])(\s+|$)([\s\S]*)$/.exec(t);let lead='',rest=t;if(m&&m[1].length<=64){lead=m[1];rest=m[3]}
   textEl.innerHTML=(lead?'<span class="lead">'+esc(lead)+'</span>':'')+'<span class="rest"></span>';const r=textEl.querySelector('.rest');
-  if(reduce||!rest){r.textContent=rest;return}r.classList.add('typing');let i=0;const tick=()=>{if(my!==txTok)return;i++;r.textContent=rest.slice(0,i);if(i<rest.length)setTimeout(tick,14);else r.classList.remove('typing')};setTimeout(tick,lead?160:0)},
+  if(reduce||!rest){r.textContent=rest;return}r.classList.add('typing');let i=0;const tick=()=>{if(my!==txTok)return;i++;r.textContent=rest.slice(0,i);if(i<rest.length)holdT(tick,14);else r.classList.remove('typing')};holdT(tick,lead?160:0)},
   get textContent(){return srEl.textContent}};
  sc.setAttribute('d',scribble(300,360,12));let pose=null,ptok=0,tuckT=null;
  const small=()=>window.matchMedia&&window.matchMedia('(max-width:900px)').matches;
@@ -825,7 +828,7 @@ const Prof=(()=>{const art=$('#pfArt'),sc=$('#pfScrib'),pen=$('#pfPencil'),textE
   if(small()){say('Field tip '+n+', '+h.toLowerCase()+': '+t,null);return}
   tipBtn.classList.remove('tc-turn');void tipBtn.offsetWidth;tipBtn.classList.add('tc-turn');sfx.key();clearTimeout(tipT);
   tipT=setTimeout(()=>{tipText.innerHTML='<b>'+n+' · '+esc(h)+'</b><br>';const sp=document.createElement('span');tipText.appendChild(sp);
-   if(reduce){sp.textContent=t}else{let i=0;const tick=()=>{i++;sp.textContent=t.slice(0,i);if(i<t.length)tipT=setTimeout(tick,22)};tick()}
+   if(reduce){sp.textContent=t}else{let i=0;const tick=()=>{i++;sp.textContent=t.slice(0,i);if(i<t.length)tipT=holdT(tick,22)};tick()}
    tipFoot.textContent='TIP '+n+' OF '+TIPS.length+' · TAP FOR NEXT';tipBtn.setAttribute('aria-label',"Prof Honey's field tip "+n+": "+h+". "+t+" Tap for the next tip.")},220)};
  $('#pfFig').onclick=()=>{if(desk.classList.contains('tucked'))untuck()};
  return {say,react,draw,flash,celebrate};})();
@@ -896,11 +899,11 @@ function openDeck(id){const d=deckById(id);if(d.custom)return go('deck',{deck:id
 const gagRun={wrong:0};
 function trackStreak(ok){if(ok){gagRun.wrong=0;return}gagRun.wrong++;if(gagRun.wrong<3||$('.gag-ov'))return;
  const left=[['md2_bridge',bridgeGag],['md2_shell',shellGag],['md2_prize',prizeGag]].filter(([f])=>!LS.get(f,false));
- if(left.length&&Math.random()<.6){gagRun.wrong=0;setTimeout(pick(left)[1],2000)}}
+ if(left.length&&Math.random()<.6){gagRun.wrong=0;const fn=pick(left)[1],t0=Date.now();let idle=0;const busy=()=>{const c=$('#cards');return !!$('.typing')||!!(c&&getComputedStyle(c).visibility==='hidden')};setTimeout(function wait(){idle=busy()?0:idle+1;if(idle<2&&Date.now()-t0<20000)return setTimeout(wait,300);fn()},1700)}}
 function gagOpen(flag,cls,html){if($('.gag-ov')||LS.get(flag,false))return null;LS.set(flag,true);const prev=document.activeElement,ov=document.createElement('div');ov.className='gag-ov '+cls;ov.innerHTML=html;document.body.appendChild(ov);
- const g={ov,timers:[],close(){g.timers.forEach(t=>{clearInterval(t);clearTimeout(t)});ov.classList.add('out');setTimeout(()=>ov.remove(),260);document.removeEventListener('keydown',key,true);if(prev&&prev.focus)prev.focus()}};
+ const g={ov,timers:[],close(){gagPaused=false;g.timers.forEach(t=>{clearInterval(t);clearTimeout(t)});ov.classList.add('out');setTimeout(()=>ov.remove(),260);document.removeEventListener('keydown',key,true);if(prev&&prev.focus)prev.focus()}};
  const key=e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();g.close()}else if(e.key==='Tab'){const f=[...ov.querySelectorAll('button:not(:disabled)')].filter(b=>!b.closest('[hidden]'));if(!f.length)return;const i=f.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}}else e.stopPropagation()};
- document.addEventListener('keydown',key,true);ov.addEventListener('click',e=>{if(e.target===ov)g.close()});return g}
+ document.addEventListener('keydown',key,true);ov.addEventListener('click',e=>{if(e.target===ov)g.close()});gagPaused=true;return g}
 function gagReveal(g,box,good,stamp,lead,body,profLine,pose){box.hidden=false;box.innerHTML=`<span class="bg-stamp ${good?'good':'bad'}">${stamp}</span><p>${lead} ${body}</p><button class="btn red gag-back">Back to the case</button>`;
  good?sfx.ding():sfx.stamp();Prof.say(profLine,pose,false,'swap');const b=$('.gag-back',box);b.onclick=()=>g.close();b.focus()}
 
