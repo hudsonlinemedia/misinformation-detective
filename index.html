@@ -379,8 +379,8 @@ textarea.reflect{width:100%;min-height:140px;font:inherit;font-family:var(--type
 }
 
 /* brooklyn bridge gag */
-.bg-ov{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(8,7,6,.62);animation:bgfade .25s ease}
-.bg-ov.out{opacity:0;transition:opacity .25s}
+.gag-ov{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(8,7,6,.62);animation:bgfade .25s ease}
+.gag-ov.out{opacity:0;transition:opacity .25s}
 @keyframes bgfade{from{opacity:0}to{opacity:1}}
 .bg-card{position:relative;width:min(430px,100%);max-height:calc(100vh - 32px);overflow:auto;background:#f5ecd6;color:#111;border:3px solid #111;outline:2px solid #111;outline-offset:-9px;box-shadow:10px 12px 0 #000;padding:20px 22px 16px;text-align:center;transform:rotate(-1.5deg);animation:bgpop .55s cubic-bezier(.2,1.5,.4,1)}
 @keyframes bgpop{0%{transform:rotate(-12deg) scale(.3);opacity:0}60%{transform:rotate(1deg) scale(1.04);opacity:1}100%{transform:rotate(-1.5deg) scale(1)}}
@@ -403,7 +403,38 @@ textarea.reflect{width:100%;min-height:140px;font:inherit;font-family:var(--type
 .bg-stamp{display:inline-block;font-family:var(--head);font-weight:700;font-size:1.6rem;letter-spacing:.1em;padding:2px 14px;border:4px double currentColor;background:#fffbf0;transform:rotate(-6deg);animation:stampin2 .4s cubic-bezier(.2,1.6,.4,1)}
 .bg-stamp.bad{color:var(--red)}.bg-stamp.good{color:var(--green)}
 @keyframes stampin2{0%{transform:rotate(-18deg) scale(2.4);opacity:0}100%{transform:rotate(-6deg) scale(1);opacity:1}}
-@media (prefers-reduced-motion:reduce){.bg-card,.bg-price b,.bg-stamp,.bg-ov{animation:none}}
+@media (prefers-reduced-motion:reduce){.bg-card,.bg-price b,.bg-stamp,.gag-ov,.pz-win,.pz-blink,.pz-claim{animation:none}.sh-c{transition:none}}
+
+/* shell game */
+.sh-card h2 span{font-size:1.9rem}
+.sh-table{position:relative;width:min(330px,100%);height:150px;margin:10px auto 12px;box-sizing:border-box;border:3px solid #111;border-radius:12px;background:radial-gradient(ellipse at 50% 40%,#2f6b3f,#1c4127 80%);box-shadow:inset 0 0 0 4px #6b4a2a}
+.sh-c{position:absolute;bottom:14px;width:84px;height:86px;margin:0 0 0 10px;padding:0;border:0;background:none;cursor:pointer;filter:drop-shadow(3px 4px 0 rgba(0,0,0,.45));transition:left .28s cubic-bezier(.4,0,.2,1),transform .35s cubic-bezier(.3,1.4,.5,1);z-index:2}
+.sh-c svg{display:block;width:100%;height:100%}
+.sh-c:disabled{cursor:default}
+.sh-c:not(:disabled):hover{transform:translateY(-5px)}
+.sh-c.lift{transform:translateY(-52px) rotate(-9deg)}
+.sh-c:focus-visible{outline:3px solid var(--blond);outline-offset:3px;border-radius:8px}
+.sh-ball{position:absolute;bottom:18px;left:calc(50% - 1px);width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#e8dcc0 60%,#b9a77e);border:2px solid #111;z-index:1}
+/* millionth visitor */
+.pz-win{position:relative;width:min(400px,100%);max-height:calc(100vh - 32px);overflow:auto;background:#fff9c4;color:#111;border:3px solid #111;box-shadow:10px 12px 0 #000;font-family:'Comic Sans MS','Chalkboard SE','Comic Neue',cursive;animation:pzpop .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pzpop{0%{transform:scale(.2) rotate(8deg);opacity:0}100%{transform:none;opacity:1}}
+.pz-bar{position:relative;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 6px 4px 10px;background:linear-gradient(90deg,#0b1f8c,#4a63e0);color:#fff;font-family:Tahoma,Verdana,sans-serif;font-weight:700;font-size:.8rem}
+.pz-ctl{display:flex;gap:4px;margin-left:auto}
+.pz-ctl i,.pz-x{display:inline-flex;align-items:center;justify-content:center;width:22px;height:20px;font-style:normal;font-family:Tahoma,Verdana,sans-serif;font-size:.85rem;line-height:1;background:#d4d0c8;color:#111;border:2px outset #fff}
+.pz-x{margin:0;padding:0;cursor:pointer;font-weight:700;transition:transform .12s}
+.pz-body{padding:14px 18px 16px;text-align:center}
+.pz-blink{display:inline-block;color:#e8001c;font-weight:700;letter-spacing:.06em;animation:pzblink .6s steps(1) infinite}
+@keyframes pzblink{50%{color:#0b1f8c}}
+.pz-body h2{margin:6px 0 4px;font-size:1.35rem;line-height:1.2;font-family:inherit}
+.pz-body h2 b{color:#e8001c;font-size:1.6rem}
+.pz-body svg{width:110px;height:auto;margin:2px auto}
+.pz-prize{margin:4px 0 8px;font-size:1.02rem}
+.pz-timer{display:inline-block;margin-bottom:10px;padding:2px 10px;background:#111;color:#ffd23c;font-family:var(--type);font-weight:700;font-size:.8rem;letter-spacing:.06em}
+.pz-claim{display:block;width:100%;margin:0;padding:12px;font-family:inherit;font-weight:700;font-size:1.25rem;color:#fff;background:linear-gradient(#3fd94f,#169926);border:3px solid #111;border-radius:10px;box-shadow:0 5px 0 #0b5c14;cursor:pointer;animation:pzpulse .9s ease-in-out infinite}
+@keyframes pzpulse{50%{transform:scale(1.04)}}
+.pz-no{margin:10px 0 0;padding:2px;border:0;background:none;color:#8a8a8a;font-family:Arial,sans-serif;font-size:.68rem;text-decoration:underline;cursor:pointer}
+.pz-reveal{font-family:var(--body,inherit);text-align:left}
+.pz-reveal .bg-stamp{display:table;margin:0 auto}
 /* laptop-height fitting (desktop layout) */
 @media (min-width:901px){
  .pf-figbtn{width:clamp(140px,calc((100vh - 440px) * .83),230px)}
@@ -860,32 +891,76 @@ function openDeck(id){const d=deckById(id);if(d.custom)return go('deck',{deck:id
 
 
 
-/* ---------- gag: three misses in a row may summon a bridge salesman (once per game) ---------- */
-let wrongRun=0;
-function trackStreak(ok){if(ok){wrongRun=0;return}wrongRun++;if(wrongRun>=3&&!LS.get('md2_bridge',false)&&!$('#bridge')&&Math.random()<.6){wrongRun=-99;setTimeout(bridgeGag,1800)}}
+/* ---------- gags: three classic cons, each once per game, never back to back ---------- */
+const gagRun={wrong:0,right:0,answered:0,cool:0};
+function trackStreak(ok){const g=gagRun;g.answered++;if(g.cool>0)g.cool--;if(ok){g.right++;g.wrong=0}else{g.wrong++;g.right=0}
+ if($('.gag-ov')||g.cool>0)return;
+ if(!ok&&g.wrong>=3&&!LS.get('md2_bridge',false)&&Math.random()<.6)fireGag(bridgeGag,2000);
+ else if(ok&&g.right>=3&&!LS.get('md2_shell',false)&&Math.random()<.5)fireGag(shellGag,4600);
+ else if(g.answered>=9&&!LS.get('md2_prize',false)&&Math.random()<.22)fireGag(prizeGag,ok?4600:2000)}
+function fireGag(fn,ms){gagRun.cool=5;gagRun.wrong=0;gagRun.right=0;setTimeout(fn,ms)}
+function gagOpen(flag,cls,html){if($('.gag-ov')||LS.get(flag,false))return null;LS.set(flag,true);const prev=document.activeElement,ov=document.createElement('div');ov.className='gag-ov '+cls;ov.innerHTML=html;document.body.appendChild(ov);
+ const g={ov,timers:[],close(){g.timers.forEach(t=>{clearInterval(t);clearTimeout(t)});ov.classList.add('out');setTimeout(()=>ov.remove(),260);document.removeEventListener('keydown',key,true);if(prev&&prev.focus)prev.focus()}};
+ const key=e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();g.close()}else if(e.key==='Tab'){const f=[...ov.querySelectorAll('button:not(:disabled)')].filter(b=>!b.closest('[hidden]'));if(!f.length)return;const i=f.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}}else e.stopPropagation()};
+ document.addEventListener('keydown',key,true);ov.addEventListener('click',e=>{if(e.target===ov)g.close()});return g}
+function gagReveal(g,box,good,stamp,lead,body,profLine,pose){box.hidden=false;box.innerHTML=`<span class="bg-stamp ${good?'good':'bad'}">${stamp}</span><p>${lead} ${body}</p><button class="btn red gag-back">Back to the case</button>`;
+ good?sfx.ding():sfx.stamp();Prof.say(profLine,pose,false,'swap');const b=$('.gag-back',box);b.onclick=()=>g.close();b.focus()}
+
+/* 1. the Brooklyn Bridge: three misses in a row */
 const BRIDGE_SVG='<svg class="bg-art" viewBox="0 0 320 128" aria-hidden="true" focusable="false"><g fill="none" stroke="#111" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="1.2" opacity=".55"><path d="M0 114h320M14 120h80M120 120h110M250 120h60M40 125h60M170 125h90"/></g><g stroke-width="1.1" opacity=".8"><path d="M112 22L60 90M112 22L80 90M112 22L140 90M112 22L162 90M224 22L172 90M224 22L194 90M224 22L252 90M224 22L276 90"/></g><path d="M0 52Q56 94 112 22Q168 104 224 22Q280 94 320 52" stroke-width="2.4"/><g stroke-width="1" opacity=".75"><path d="M20 67v23M40 78v12M60 82v8M80 76v14M96 60v30M128 46v44M144 62v28M160 68v22M176 68v22M192 62v28M208 46v44M240 60v30M256 76v14M276 82v8M296 78v12"/></g><path d="M0 90h320M0 96h320" stroke-width="2.6"/></g><g stroke="#111" stroke-width="2.2" fill="#f5ecd6"><path d="M96 108V30l3-10h26l3 10v78z"/><path d="M208 108V30l3-10h26l3 10v78z"/></g><g fill="#111"><path d="M101 96V52q0-14 4.5-14t4.5 14v44zM114 96V52q0-14 4.5-14t4.5 14v44zM213 96V52q0-14 4.5-14t4.5 14v44zM226 96V52q0-14 4.5-14t4.5 14v44z"/><rect x="98" y="26" width="28" height="3"/><rect x="210" y="26" width="28" height="3"/></g></svg>';
-function bridgeGag(){if(LS.get('md2_bridge',false)||$('#bridge'))return;LS.set('md2_bridge',true);wrongRun=0;
- const prev=document.activeElement,ov=document.createElement('div');ov.id='bridge';ov.className='bg-ov';
- ov.innerHTML=`<div class="bg-card" role="dialog" aria-modal="true" aria-labelledby="bgT" aria-describedby="bgPitch">
+function bridgeGag(){const g=gagOpen('md2_bridge','bg-ov',`<div class="bg-card" role="dialog" aria-modal="true" aria-labelledby="bgT" aria-describedby="bgPitch">
   <div class="bg-top">★ ONE-TIME OFFER · TODAY ONLY ★</div>${BRIDGE_SVG}
   <h2 id="bgT">BUY THE <span>BROOKLYN BRIDGE</span></h2>
   <div class="bg-price"><s>$25,000,000</s><b>$1</b></div>
   <p class="bg-pitch" id="bgPitch">100% genuine. Comes with a deed and the toll booth. Three other buyers are looking at it right now. Trust me.</p>
-  <div class="bg-timer" aria-hidden="true">OFFER ENDS IN <b id="bgClock">0:09</b></div>
-  <div class="bg-btns"><button class="btn red" id="bgBuy">Buy it for $1!</button><button class="btn" id="bgNo">Nice try, pal</button></div>
+  <div class="bg-timer" aria-hidden="true">OFFER ENDS IN <b class="bgClock">0:09</b></div>
+  <div class="bg-btns"><button class="btn red" data-g="buy">Buy it for $1!</button><button class="btn" data-g="no">Nice try, pal</button></div>
   <p class="bg-fine">*Seller not affiliated with the City of New York. No refunds. No bridge.</p>
-  <div class="bg-reveal" id="bgReveal" hidden></div></div>`;
- document.body.appendChild(ov);sfx.ding();let n=9;const clk=$('#bgClock');
- const iv=setInterval(()=>{n--;if(n<0){n=9;clk.textContent='EXTENDED!';clk.parentNode.classList.add('ext');setTimeout(()=>clk.parentNode.classList.remove('ext'),900);return}clk.textContent='0:0'+n},1000);
- const close=()=>{clearInterval(iv);ov.classList.add('out');setTimeout(()=>ov.remove(),260);document.removeEventListener('keydown',key,true);if(prev&&prev.focus)prev.focus()};
- const key=e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();close()}else if(e.key==='Tab'){const f=[...ov.querySelectorAll('button')].filter(b=>!b.closest('[hidden]'));const i=f.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}}else e.stopPropagation()};
- document.addEventListener('keydown',key,true);
- const reveal=bought=>{clearInterval(iv);$('.bg-timer',ov).remove();$('.bg-btns',ov).remove();const r=$('#bgReveal');r.hidden=false;
-  r.innerHTML=`<span class="bg-stamp ${bought?'bad':'good'}">${bought?'CONNED!':'CON SPOTTED'}</span><p>${bought?"Gotcha. That's the oldest con in New York.":"Good instincts, detective."} Spot the tricks: <b>fake urgency</b> (that clock never runs out), <b>a price too good to be true</b>, and <b>&ldquo;trust me&rdquo; instead of proof</b>. Misinformation sells the same way.</p><button class="btn red" id="bgBack">Back to the case</button>`;
-  bought?sfx.stamp():sfx.ding();Prof.say(bought?"Sold a bridge? Three misses in a row, detective. Slow down and read my notes.":"Ha! You spotted that con. Bring the same skepticism back to the case.",bought?'falselead':'cracked',false,'swap');
-  $('#bgBack').onclick=close;$('#bgBack').focus()};
- $('#bgBuy').onclick=()=>reveal(true);$('#bgNo').onclick=()=>reveal(false);ov.addEventListener('click',e=>{if(e.target===ov)close()});
- setTimeout(()=>{const b=$('#bgNo');if(b)b.focus()},60)}
+  <div class="bg-reveal" hidden></div></div>`);if(!g)return;const ov=g.ov;sfx.ding();let n=9;const clk=$('.bgClock',ov);
+ g.timers.push(setInterval(()=>{n--;if(n<0){n=9;clk.textContent='EXTENDED!';clk.parentNode.classList.add('ext');setTimeout(()=>clk.parentNode.classList.remove('ext'),900);return}clk.textContent='0:0'+n},1000));
+ const go=bought=>{g.timers.forEach(clearInterval);$('.bg-timer',ov).remove();$('.bg-btns',ov).remove();
+  gagReveal(g,$('.bg-reveal',ov),!bought,bought?'CONNED!':'CON SPOTTED',bought?"Gotcha. That's the oldest con in New York.":"Good instincts, detective.","Spot the tricks: <b>fake urgency</b> (that clock never runs out), <b>a price too good to be true</b>, and <b>&ldquo;trust me&rdquo; instead of proof</b>. Misinformation sells the same way.",bought?"Sold a bridge? Three misses in a row, detective. Slow down and read my notes.":"Ha! You spotted that con. Bring the same skepticism back to the case.",bought?'falselead':'cracked')};
+ $('[data-g=buy]',ov).onclick=()=>go(true);$('[data-g=no]',ov).onclick=()=>go(false);setTimeout(()=>{const b=$('[data-g=no]',ov);if(b)b.focus()},60)}
+
+/* 2. the shell game: a hot streak attracts a street hustler */
+const CUP_SVG='<svg viewBox="0 0 90 92" aria-hidden="true"><path d="M24 12L13 83Q45 93 77 83L66 12Q45 5 24 12Z" fill="#c0202b" stroke="#111" stroke-width="3" stroke-linejoin="round"/><path d="M24 12Q45 19 66 12" fill="none" stroke="#111" stroke-width="2.5"/><path d="M19 46Q45 54 71 46" fill="none" stroke="#fffdf4" stroke-width="7"/><path d="M16 66Q45 74 74 66" fill="none" stroke="#fffdf4" stroke-width="5"/><path d="M31 20L25 76" stroke="#fff" stroke-width="3" opacity=".45" stroke-linecap="round"/><path d="M13 83Q45 93 77 83" fill="none" stroke="#111" stroke-width="3"/></svg>';
+function shellGag(){const g=gagOpen('md2_shell','sh-ov',`<div class="bg-card sh-card" role="dialog" aria-modal="true" aria-labelledby="shT" aria-describedby="shSay">
+  <div class="bg-top">★ STEP RIGHT UP · FIND THE BALL ★</div>
+  <h2 id="shT">HOT STREAK, <span>DETECTIVE!</span></h2>
+  <p class="bg-pitch" id="shSay" aria-live="polite">Three right in a row? You've got sharp eyes. Keep 'em on the ball&hellip;</p>
+  <div class="sh-table"><span class="sh-ball" aria-hidden="true"></span>${[0,1,2].map(i=>`<button class="sh-c" data-i="${i}" disabled aria-label="Cup ${i+1}">${CUP_SVG}</button>`).join('')}</div>
+  <div class="bg-btns"><button class="btn" data-g="walk">Walk away</button></div>
+  <p class="bg-fine">*Just for fun. Your score is not at stake. Neither is the hustler&rsquo;s honesty.</p>
+  <div class="bg-reveal" hidden></div></div>`);if(!g)return;const ov=g.ov,say=$('#shSay'),cups=$$('.sh-c',ov),ball=$('.sh-ball',ov);let slot=[0,1,2],done=false;
+ const place=()=>cups.forEach((c,i)=>c.style.left=`calc(${slot[i]} * (100% - 84px) / 2)`);place();
+ const T=(f,ms)=>g.timers.push(setTimeout(f,ms));
+ T(()=>{cups[1].classList.add('lift');sfx.page()},350);
+ T(()=>{cups[1].classList.remove('lift');say.textContent='Here we go…'},1700);
+ T(()=>ball.remove(),2050);
+ for(let k=0;k<9;k++)T(()=>{const a=Math.floor(Math.random()*3);let b=Math.floor(Math.random()*2);if(b>=a)b++;const ia=slot.indexOf(a),ib=slot.indexOf(b);slot[ia]=b;slot[ib]=a;place();sfx.key()},2150+k*300);
+ T(()=>{if(done)return;say.textContent='So, detective: which cup is the ball under?';cups.forEach(c=>c.disabled=false);[...cups].sort((x,y)=>slot[cups.indexOf(x)]-slot[cups.indexOf(y)])[0].focus()},2150+9*300+250);
+ const end=picked=>{if(done)return;done=true;g.timers.forEach(clearTimeout);cups.forEach(c=>c.disabled=true);if(ball.isConnected)ball.remove();
+  if(picked){picked.classList.add('lift');sfx.page();setTimeout(()=>{cups.forEach(c=>c.classList.add('lift'));say.textContent='Empty? All of them? Funny. The ball is in the hustler’s hand.'},800)}
+  else say.textContent='Walking away from a street game. Smart.';
+  const w=$('[data-g=walk]',ov);if(w)w.parentNode.remove();
+  setTimeout(()=>gagReveal(g,$('.bg-reveal',ov),!picked,picked?'RIGGED!':'SMART MOVE',picked?'The ball was never under any cup. The hustler palmed it while you watched the shuffle.':'Good call. In a street shell game the ball usually isn&rsquo;t under any cup.','When someone else controls the evidence and the rules, careful watching can&rsquo;t win. <b>Ask who&rsquo;s running the game</b> and whether you can check for yourself. (Your score is safe.)',picked?"Rigged from the start. Always ask who controls the evidence.":"Smart. When you can't check for yourself, don't play the game.",picked?'falselead':'cracked'),picked?1700:200)};
+ cups.forEach(c=>c.onclick=()=>end(c));$('[data-g=walk]',ov).onclick=()=>end(null);setTimeout(()=>{const b=$('[data-g=walk]',ov);if(b)b.focus()},60)}
+
+/* 3. the millionth-visitor prize popup: comes out of nowhere */
+const GIFT_SVG='<svg viewBox="0 0 120 100" aria-hidden="true"><g stroke="#111" stroke-width="2.5" stroke-linejoin="round"><rect x="18" y="44" width="84" height="50" fill="#2f7bd8"/><rect x="12" y="30" width="96" height="16" fill="#3b8cf0"/><rect x="53" y="30" width="14" height="64" fill="#ffd23c"/><path d="M60 30C44 6 24 14 36 26c6 5 24 4 24 4zM60 30C76 6 96 14 84 26c-6 5-24 4-24 4z" fill="#ffd23c"/></g><g fill="#ffd23c" stroke="#111" stroke-width="1.5"><path d="M6 12l3 7 7 2-7 2-3 7-3-7-7-2 7-2z" transform="translate(6 4)"/><path d="M6 12l3 7 7 2-7 2-3 7-3-7-7-2 7-2z" transform="translate(98 48) scale(.8)"/></g></svg>';
+function prizeGag(){const g=gagOpen('md2_prize','pz-ov',`<div class="pz-win" role="dialog" aria-modal="true" aria-labelledby="pzT" aria-describedby="pzBody">
+  <div class="pz-bar"><span>★ CONGRATULATIONS!!! ★ ★ ★</span><span class="pz-ctl" aria-hidden="true"><i>_</i><i>□</i></span><button class="pz-x" aria-label="Close">×</button></div>
+  <div class="pz-body" id="pzBody"><div class="pz-blink">!!! YOU ARE A WINNER !!!</div><h2 id="pzT">You are our <b>1,000,000th</b> visitor!</h2>${GIFT_SVG}
+   <p class="pz-prize">You&rsquo;ve WON a <b>dream vacation</b> + a <b>$1,000 gift card</b>!!</p>
+   <div class="pz-timer">Prize reserved for <b class="pzClock">0:30</b></div>
+   <div class="pz-btns"><button class="pz-claim" data-g="claim">CLAIM MY PRIZE!!!</button></div>
+   <button class="pz-no" data-g="no">No thanks, I don&rsquo;t like free money</button>
+   <div class="bg-reveal pz-reveal" hidden></div></div></div>`);if(!g)return;const ov=g.ov;sfx.ding();setTimeout(()=>sfx.ding(),180);
+ let n=30;const clk=$('.pzClock',ov);g.timers.push(setInterval(()=>{n=n>1?n-1:30;clk.textContent='0:'+String(n).padStart(2,'0')},1000));
+ const x=$('.pz-x',ov);let dodges=0;x.addEventListener('pointerenter',e=>{if(e.pointerType!=='mouse'||dodges>=3)return;dodges++;x.style.transform=`translate(${-60-Math.random()*220}px,${dodges%2?1:0}px)`});
+ const go=took=>{g.timers.forEach(clearInterval);$('.pz-btns',ov).remove();$('.pz-no',ov).remove();$('.pz-timer',ov).remove();
+  gagReveal(g,$('.pz-reveal',ov),!took,took?'SCAMMED!':'SCAM SPOTTED',took?'There&rsquo;s no prize. There never is.':'Good eye. There was never a prize.','Spot the tricks: <b>a prize for a contest you never entered</b>, <b>a countdown to rush you</b>, <b>a close button that runs away</b>, and <b>a guilt-trip &ldquo;no&rdquo; button</b> (that one&rsquo;s called confirmshaming). Health scams use the same playbook: &ldquo;Limited supply! Act now!&rdquo;',took?"A million visitors, and every one of them a winner. Funny how that works.":"Nice. You can't win a contest you never entered.",took?'falselead':'cracked')};
+ $('[data-g=claim]',ov).onclick=()=>go(true);$('[data-g=no]',ov).onclick=()=>go(false);x.onclick=()=>go(false);setTimeout(()=>{const b=$('[data-g=no]',ov);if(b)b.focus()},60)}
 
 /* ---------- home ---------- */
 const HOME_LINES=["Every claim leaves fingerprints. Let's go find them.","Back on the beat, detective? The evidence won't examine itself.","Somebody's selling fear again. Let's see what the evidence says."];
