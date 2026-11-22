@@ -310,7 +310,7 @@ textarea.reflect{width:100%;min-height:140px;font:inherit;font-family:var(--type
 #hmSay.typing::after{content:"";display:inline-block;width:.5em;height:1em;background:#111;vertical-align:-.12em;margin-left:2px;animation:blink .7s steps(1) infinite}
 .hm-go{font-size:1.05rem;padding:12px 20px}
 .hm-stat{margin:14px 0 0;font-family:var(--type);font-size:.8rem;font-weight:700;letter-spacing:.06em;color:#b8ad98}
-.hm-dir .folder{cursor:pointer}
+.hm{min-height:calc(100vh - 150px);display:flex;flex-direction:column;justify-content:center}
 @media (max-width:900px){
  .hm-hero{grid-template-columns:1fr;gap:22px;text-align:center;padding-top:4px}
  .hm-hero::before{background-position:center}
@@ -726,27 +726,15 @@ function openDeck(id){const d=deckById(id);if(d.custom)return go('deck',{deck:id
 /* ---------- home ---------- */
 const HOME_LINES=["Every claim leaves fingerprints. Let's go find them.","Back on the beat, detective? The evidence won't examine itself.","Somebody's selling fear again. Let's see what the evidence says."];
 function home(){const my=tok;const all=decks.filter(d=>d.items),ex=all.reduce((a,d)=>a+progress(d).done,0),n=all.reduce((a,d)=>a+progress(d).n,0);
- const cases=decks.filter(d=>d.group==='cases'),closed=cases.filter(d=>{const p=progress(d);return p.n&&p.done===p.n}).length,spec=decks.filter(d=>d.group==='special');
  const first=!LS.get('md2_home',false);LS.set('md2_home',true);const line=first?HOME_LINES[0]:pick(HOME_LINES);
- const card=(tab,art,title,meta,desc,l,r,act)=>`<button class="folder" data-tab="${esc(tab)}" data-hact="${act}"><div class="thumb">${thumbSVG(art)}</div><h3>${esc(title)}</h3><div class="meta">${esc(meta)}</div><p class="desc">${esc(desc)}</p><div class="score"><span>${esc(l)}</span><span>${esc(r)}</span></div></button>`;
- const vd=deckById('videos'),fd=deckById('final'),fp=progress(fd);
  view.innerHTML=`<section class="hm"><div class="hm-hero">
   <figure class="hm-panel" aria-hidden="true"><svg id="hmStage" viewBox="38 14 254 346" focusable="false"><defs><mask id="hmMask" maskUnits="userSpaceOnUse" x="0" y="0" width="300" height="360"><rect x="0" y="0" width="300" height="360" fill="#000"/><path id="hmScrib" d="${scribble(300,360,12)}" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/></mask></defs><rect x="0" y="0" width="300" height="360" fill="#f1ebdd"/><g mask="url(#hmMask)">${PROF.POSE.hero}</g><g id="hmPencil" opacity="0">${$('#pfPencil').innerHTML}</g></svg><span class="hm-cap">MEANWHILE, AT THE LAB…</span></figure>
   <div class="hm-title"><div class="kicker" style="background:var(--red)">MEDICAL ANTHROPOLOGY · INTERACTIVE LAB</div><h1>THE MISINFORMATION <span>DETECTIVE</span></h1><p class="sub">Bad Science, Big Profits &amp; the Business of Fear</p><p class="hm-credit">STARRING <b>PROF HONEY</b></p>
    <div class="hm-balloon"><span class="pf-name" aria-hidden="true">PROF HONEY</span><p id="hmSay" aria-hidden="true"></p><span class="sr">Prof Honey says: ${esc(line)}</span></div>
    <div class="row"><button class="btn red hm-go" data-hact="board">${ex?'Continue investigating →':'Start investigating →'}</button><button class="btn" data-hact="handbook">Detective's handbook</button></div>
    <p class="hm-stat">${ex?`${ex} of ${n} exhibits examined · ${total().toLocaleString()} pts`:`${n} exhibits · ${decks.length} files · every one open`}</p></div></div>
- <h2 class="group-h">EVERYTHING IN ONE PLACE</h2>
- <div class="folders hm-dir">
-  ${card('CASE FILES',deckById('case-snake').art,'The Case Board',cases.length+' CASE FILES','Snake oil, vaccine scares, food fears, bad science and the money trail. Start here.',closed+'/'+cases.length+' closed','','board')}
-  ${card('SPECIAL FILES','megaphone','Special Investigations',spec.length+' FILES','Mystery ads, the bias lab, myth busting, ancestral diets and bad-science readings.','Any order','','special')}
-  ${card('SCREENING ROOM',vd.art,'The Video Room','4 VIDEOS · 2 PAIRS','Watch the claim, then watch the expert take it apart.','Separate score inside','','videos')}
-  ${card('FINAL FILE',fd.art,'The Final Mystery','THE VIRAL VEGETABLE PANIC','Put every skill together on one last case.',fp.done+'/'+fp.n+' examined',score(fd.prefix)+' pts','final')}
-  ${card('HANDBOOK','book',"Detective's Handbook",D.glossary.length+' TERMS','Prof Honey’s flip notebook of the terms every investigator needs.','Flip through','','handbook')}
-  ${card('LOCKER','dossier','Evidence Locker','ORIGINAL SOURCES','The real public-health, research and regulatory sources behind every case.','Check the originals','','locker')}
-  ${card('RECORD','chart',"Detective's Record",'YOUR SCORES','Section scores to show your instructor.','Total',total().toLocaleString()+' pts','record')}
- </div></section>`;
- const act={board:()=>go('board'),special:()=>go('board',{at:'grp-special'}),record:()=>go('board',{at:'record'}),videos:()=>openDeck('videos'),final:()=>openDeck('final'),handbook:()=>go('handbook'),locker:()=>go('locker')};
+ </section>`;
+ const act={board:()=>go('board'),handbook:()=>go('handbook')};
  $$('[data-hact]',view).forEach(b=>b.onclick=()=>act[b.dataset.hact]());
  const say=$('#hmSay');
  drawIn($('#hmScrib'),$('#hmPencil'),2600,()=>my===tok,-40).then(()=>{if(my!==tok)return;$('.hm-panel').classList.add('drawn');if(reduce)say.textContent=line;else type(say,line,24,my)})}
